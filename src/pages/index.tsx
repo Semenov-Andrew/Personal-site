@@ -1,6 +1,6 @@
 import Head from "next/head";
 import {SignInButton, SignOutButton, useUser} from "@clerk/nextjs";
-import {NextPage} from "next";
+import {type NextPage} from "next";
 
 const Home:NextPage = () => {
     const user = useUser();

@@ -1,8 +1,8 @@
-import {NextPage} from "next";
+import {type NextPage} from "next";
 import {api} from "~/utils/api";
-import {FC} from "react"
-import {Post as PostType} from "@prisma/client"
-import {FilteredUser} from "~/server/helpers/filterUserForClient";
+import {type FC} from "react"
+import {type Post as PostType} from "@prisma/client"
+import {type FilteredUser} from "~/server/helpers/filterUserForClient";
 import Image from "next/image"
 
 type PostProps = {
@@ -16,7 +16,7 @@ export const Post: FC<PostProps> = ({post, author}) => {
             <div className={"flex gap-2"}>
                 <Image
                     src={author.profileImageUrl}
-                    alt={`${author.username}'s picture`}
+                    alt={`${author.username ? author.username : "author"}'s picture`}
                     width={40}
                     height={40}
                     className={"rounded-full"}

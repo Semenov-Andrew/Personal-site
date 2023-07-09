@@ -1,4 +1,4 @@
-import {User} from "@clerk/backend";
+import {type User} from "@clerk/backend";
 
 export type FilteredUser = {
     id: string,
