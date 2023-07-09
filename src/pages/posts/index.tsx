@@ -26,6 +26,7 @@ export const Post: FC<PostProps> = ({post, author}) => {
                     {author.username && <div>@{author.username}</div>}
                 </div>
             </div>
+
             <div className={"mt-2"}>{post.content}</div>
         </div>
     );
@@ -33,17 +34,20 @@ export const Post: FC<PostProps> = ({post, author}) => {
 
 
 const Posts: NextPage = () => {
-    const posts = api.posts.getAll.useQuery().data
+    const {data: posts, error} = api.posts.getAll.useQuery()
     return (
         <div className={"container mx-auto"}>
             <h2 className={"text-2xl font-bold sm:text-3xl lg:text-4xl"}>
                 Posts
             </h2>
-            <div>
-                {posts && posts.length && posts.map(({post, author}) => (
-                    <Post post={post} author={author} key={post.id}/>
-                ))}
-            </div>
+            {!error
+                ? <div>
+                    {posts && posts.length && posts.map(({post, author}) => (
+                        <Post post={post} author={author} key={post.id}/>
+                    ))}
+                </div>
+                : <div className={"text-red-400"}>Error: {error.message}</div>}
+
         </div>
     );
 };
