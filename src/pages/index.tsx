@@ -1,9 +1,8 @@
 import Head from "next/head";
 import {SignInButton, SignOutButton, useUser} from "@clerk/nextjs";
-import {api} from "~/utils/api";
+import {NextPage} from "next";
 
-export default function Home() {
-    const posts = api.posts.getAll.useQuery().data
+const Home:NextPage = () => {
     const user = useUser();
     return (
         <>
@@ -43,17 +42,11 @@ export default function Home() {
                             </button>
                         </SignInButton>
                     )}
-                    <div className={"mt-10"}>
-                        <h2 className={"text-2xl font-bold sm:text-3xl lg:text-4xl"}>Btw some data from
-                            tRPC:</h2>
-                        <ul>
-                            {posts && posts.length && posts.map((post) => (
-                                <li key={post.id} className={"text-white/80"}>{post.content}</li>
-                            ))}
-                        </ul>
-                    </div>
+
                 </div>
             </main>
         </>
     );
 }
+
+export default Home
