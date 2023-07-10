@@ -35,7 +35,7 @@ const PostsList: FC = () => {
 
 const PostsForm: FC = () => {
     return <form>
-        <input className={"w-full px-4 py-2 border "}/>
+        <textarea className={"w-full px-4 py-2 border "}/>
     </form>
 }
 

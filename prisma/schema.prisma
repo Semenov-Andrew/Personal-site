@@ -15,7 +15,10 @@ model Post {
   id        String   @id @default(cuid())
   createdAt DateTime @default(now())
   content   String   @db.VarChar(255)
-  authorId  String
+  role      Role     @default(USER)
+}
 
-  @@index([authorId])
+enum Role {
+  USER
+  ADMIN
 }
