@@ -1,7 +1,7 @@
 # Andrew's website
 [andrew-semyonov.vercel.app](https://andrew-semyonov.vercel.app)
 
-## Routing
+## Routing *(will be updated)*
 ![Routing](docs/img/routing.png)
 
 ## Architecture
