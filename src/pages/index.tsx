@@ -12,20 +12,20 @@ const Home:NextPage = () => {
                 <link rel="icon" href="/favicon.ico"/>
             </Head>
             <main
-                className="flex min-h-screen flex-col items-center justify-center">
+                className="flex min-h-screen flex-col items-center justify-center bg-gradient-to-b from-[#3a1493] to-[#6710c6] text-white">
                 <div className="container mx-auto flex max-w-5xl flex-col items-center pb-40 font-sans">
                     <h1 className="text-center text-4xl font-extrabold sm:text-5xl lg:text-6xl">
                         Sry, content now is not available, this app is under heave
                         development
                     </h1>
                     <p className="mt-10 text-white/80">
-                        But you still <span className="font-semibold">can</span>:
+                        But you still <span className="font-semibold text-white">can</span>:
                     </p>
                     {user.isSignedIn ? (
                         <SignOutButton>
                             <button
                                 className={
-                                    "mt-10 flex h-12 w-auto items-center justify-center rounded-lg px-6 font-semibold focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 focus:ring-offset-ring"
+                                    "highlight-white/20 mt-10 flex h-12 w-auto items-center justify-center rounded-lg  bg-amber-400 px-6 font-semibold hover:bg-amber-300 focus:outline-none focus:ring-2 focus:ring-slate-400 focus:ring-offset-2 focus:ring-offset-slate-50 text-slate-900"
                                 }
                             >
                                 Sign Out
@@ -35,7 +35,7 @@ const Home:NextPage = () => {
                         <SignInButton>
                             <button
                                 className={
-                                    "mt-10 flex h-12 w-auto items-center justify-center rounded-lg px-6 font-semibold focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 focus:ring-offset-ring"
+                                    "highlight-white/20 mt-10 flex h-12 w-auto items-center justify-center rounded-lg  bg-amber-400 px-6  font-semibold hover:bg-amber-300 focus:outline-none focus:ring-2 focus:ring-slate-400 focus:ring-offset-2 focus:ring-offset-slate-50"
                                 }
                             >
                                 Sign In

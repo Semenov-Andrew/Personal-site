@@ -11,7 +11,7 @@ type PostProps = {
 
 export const Post: FC<PostProps> = ({post}) => {
     return (
-        <div className={"rounded-lg text-white p-4"}>
+        <div className={"bg-black rounded-lg text-white p-4"}>
             <div className={"flex gap-2"}>
             </div>
             <div className={"mt-2"}>{post.content}</div>
@@ -22,7 +22,7 @@ export const Post: FC<PostProps> = ({post}) => {
 
 const PostsList: FC = () => {
     const {data: posts, error, isLoading} = api.posts.getAll.useQuery()
-    if (error) return <div className={"text-destructive-foreground"}>Error: {error.message}</div>
+    if (error) return <div className={"text-red-400"}>Error: {error.message}</div>
     if (isLoading) return <div>Loading ...</div>
     return (
         <div>
