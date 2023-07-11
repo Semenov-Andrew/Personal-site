@@ -2,8 +2,6 @@ import {type NextPage} from "next";
 import {api} from "~/utils/api";
 import {type FC} from "react"
 import {type Post as PostType} from "@prisma/client"
-import {type FilteredUser} from "~/server/helpers/filterUserForClient";
-import Image from "next/image"
 
 type PostProps = {
     post: PostType
