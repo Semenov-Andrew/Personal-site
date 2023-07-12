@@ -12,7 +12,12 @@ const Posts: FC = async () => {
     return (
         <main>
             {posts.map((post) => (
-                <div key={post.id}>{post.content}</div>
+                <div
+                    className="bg-secondary text-secondary-foreground"
+                    key={post.id}
+                >
+                    {post.content}
+                </div>
             ))}
         </main>
     )
