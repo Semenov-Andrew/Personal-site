@@ -4,7 +4,7 @@
  */
 import { withContentlayer } from "next-contentlayer"
 
-import "./env.mjs"
+import "./src/env.mjs"
 
 /** @type {import("next").NextConfig} */
 const config = {
