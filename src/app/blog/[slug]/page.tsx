@@ -1,4 +1,4 @@
-import { FC } from "react"
+import { type FC } from "react"
 import { notFound } from "next/navigation"
 import { allDocs } from "contentlayer/generated"
 
