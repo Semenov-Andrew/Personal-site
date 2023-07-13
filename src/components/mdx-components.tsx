@@ -1,7 +1,7 @@
 import * as React from "react"
 import Image from "next/image"
 import { useMDXComponent } from "next-contentlayer/hooks"
-
+import type { MDXComponents } from 'mdx/types'
 import { cn } from "@/lib/utils"
 import { Callout } from "@/components/callout"
 import { MdxCard } from "@/components/mdx-card"
@@ -136,7 +136,7 @@ const components = {
     th: ({
         className,
         ...props
-    }: React.TableHTMLAttributes<HTMLTableHeaderCellElement>) => (
+    }: React.HTMLAttributes<HTMLTableHeaderCellElement>) => (
         <th
             className={cn(
                 "border px-4 py-2 text-left font-bold [&[align=center]]:text-center [&[align=right]]:text-right",
@@ -148,7 +148,7 @@ const components = {
     td: ({
         className,
         ...props
-    }: React.TableHTMLAttributes<HTMLTableDataCellElement>) => (
+    }: React.HTMLAttributes<HTMLTableDataCellElement>) => (
         <td
             className={cn(
                 "border px-4 py-2 text-left [&[align=center]]:text-center [&[align=right]]:text-right",
@@ -189,8 +189,8 @@ export function Mdx({ code }: MdxProps) {
 
     return (
         <div className="mdx">
-            {/* @ts-ignore */}
-            <Component components={components} />
+            {/* eslint-disable-next-line @typescript-eslint/no-unsafe-assignment */}
+            <Component components={components as MDXComponents} />
         </div>
     )
 }

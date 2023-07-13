@@ -10,14 +10,14 @@ interface PageProps {
     }
 }
 
-const getDocFromParams = async (slug: string) => {
+const getDocFromParams = (slug: string) => {
     const doc = allDocs.find((doc) => doc.slugAsParams === slug)
     if (!doc) notFound()
     return doc
 }
 
-const page: FC<PageProps> = async ({ params }) => {
-    const doc = await getDocFromParams(params.slug)
+const page: FC<PageProps> = ({ params }) => {
+    const doc = getDocFromParams(params.slug)
     return (
         <div className="container mx-auto flex flex-col gap-y-4 py-4">
             <h1 className="text-3xl">{doc.title}</h1>
