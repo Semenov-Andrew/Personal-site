@@ -2,6 +2,7 @@ import { type FC } from "react"
 import Image from "next/image"
 import Link from "next/link"
 import { notFound } from "next/navigation"
+import { ChevronLeftIcon } from "@heroicons/react/24/solid"
 import { allAuthors, allPosts } from "contentlayer/generated"
 
 import { cn, formatDate } from "@/lib/utils"
@@ -34,7 +35,8 @@ const page: FC<PageProps> = ({ params }) => {
                     "absolute left-[-200px] top-14 hidden xl:inline-flex"
                 )}
             >
-                See all posts
+                <ChevronLeftIcon className="h-3.5 w-3.5 text-black" />
+                <span className="ml-2">See all posts</span>
             </Link>
             <div>
                 {post.date && (
@@ -85,7 +87,8 @@ const page: FC<PageProps> = ({ params }) => {
                     href="/blog"
                     className={cn(buttonVariants({ variant: "ghost" }))}
                 >
-                    See all posts
+                    <ChevronLeftIcon className="h-3.5 w-3.5 text-black" />
+                    <span className="ml-2">See all posts</span>
                 </Link>
             </div>
         </article>
