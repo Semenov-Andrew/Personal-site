@@ -16,9 +16,9 @@ const computedFields = {
     },
 }
 
-export const Doc = defineDocumentType(() => ({
-    name: "Doc",
-    filePathPattern: `docs/**/*.mdx`,
+export const Post = defineDocumentType(() => ({
+    name: "Post",
+    filePathPattern: `posts/**/*.mdx`,
     contentType: "mdx",
     fields: {
         title: {
@@ -28,9 +28,42 @@ export const Doc = defineDocumentType(() => ({
         description: {
             type: "string",
         },
+        date: {
+            type: "date",
+            required: true,
+        },
         published: {
             type: "boolean",
             default: true,
+        },
+        authors: {
+            type: "list",
+            of: { type: "string" },
+            required: "true",
+        },
+    },
+    computedFields,
+}))
+
+export const Author = defineDocumentType(() => ({
+    name: "Author",
+    filePathPattern: `authors/**/*.mdx`,
+    contentType: "mdx",
+    fields: {
+        title: {
+            type: "string",
+            required: true,
+        },
+        description: {
+            type: "string",
+        },
+        avatar: {
+            type: "string",
+            required: true,
+        },
+        github: {
+            type: "string",
+            required: true,
         },
     },
     computedFields,
@@ -38,7 +71,7 @@ export const Doc = defineDocumentType(() => ({
 
 export default makeSource({
     contentDirPath: "./src/content",
-    documentTypes: [Doc],
+    documentTypes: [Post, Author],
     mdx: {
         remarkPlugins: [remarkGfm],
         rehypePlugins: [
@@ -46,6 +79,7 @@ export default makeSource({
             [
                 rehypePrettyCode,
                 {
+                    keepBackground: false,
                     theme: "github-dark",
                     onVisitLine(node) {
                         // Prevent lines from collapsing in `display: grid` mode, and allow empty

@@ -1,7 +1,8 @@
 import * as React from "react"
 import Image from "next/image"
+import type { MDXComponents } from "mdx/types"
 import { useMDXComponent } from "next-contentlayer/hooks"
-import type { MDXComponents } from 'mdx/types'
+
 import { cn } from "@/lib/utils"
 import { Callout } from "@/components/callout"
 import { MdxCard } from "@/components/mdx-card"
@@ -169,7 +170,7 @@ const components = {
     code: ({ className, ...props }: React.HTMLAttributes<HTMLElement>) => (
         <code
             className={cn(
-                "relative rounded border px-[0.3rem] py-[0.2rem] font-mono text-sm",
+                "relative rounded border bg-secondary px-[0.3rem] py-[0.2rem] font-mono text-sm",
                 className
             )}
             {...props}
