@@ -6,7 +6,7 @@ import { ChevronLeftIcon } from "@heroicons/react/24/solid"
 import { allAuthors, allPosts } from "contentlayer/generated"
 
 import { cn, formatDate } from "@/lib/utils"
-import { buttonVariants } from "@/components/ui/Button"
+import { buttonVariants } from "@/components/ui/button"
 import { Mdx } from "@/components/mdx-components"
 
 interface PageProps {

@@ -1,3 +1,5 @@
+import { Header } from "@/components/header"
+
 import "./globals.css"
 import "./mdx.css"
 
@@ -18,7 +20,10 @@ export default function RootLayout({
 }) {
     return (
         <html lang="en">
-            <body className={inter.className}>{children}</body>
+            <body className={inter.className}>
+                <Header />
+                {children}
+            </body>
         </html>
     )
 }
