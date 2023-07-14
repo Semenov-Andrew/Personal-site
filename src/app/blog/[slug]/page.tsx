@@ -45,7 +45,7 @@ const page: FC<PageProps> = ({ params }) => {
                         Published on {formatDate(post.date)}
                     </time>
                 )}
-                <h1 className="mt-2 inline-block font-heading text-3xl font-semibold leading-tight lg:text-4xl">
+                <h1 className="mt-2 inline-block font-heading text-3xl font-bold leading-tight lg:text-4xl">
                     {post.title}
                 </h1>
                 {authors?.length ? (

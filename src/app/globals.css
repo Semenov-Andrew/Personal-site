@@ -34,6 +34,8 @@
         --ring: 215 20.2% 65.1%;
 
         --radius: 0.5rem;
+
+        --font-heading: "Inter", Helvetica, Arial, sans-serif;
     }
 
     .dark {
@@ -67,6 +69,8 @@
         --ring: 216 34% 17%;
 
         --radius: 0.5rem;
+
+        --font-heading: "Inter", Helvetica, Arial, sans-serif;
     }
 }
 
