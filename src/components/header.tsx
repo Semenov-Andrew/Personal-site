@@ -19,6 +19,7 @@ const navLinks: NavLink[] = [
 
 export const Header: FC = () => {
     const pathname = usePathname()
+    console.log(pathname)
 
     return (
         <header className="container mx-auto flex items-center py-6">
@@ -29,7 +30,7 @@ export const Header: FC = () => {
             {navLinks.length ? (
                 <nav className="ml-6 flex space-x-3 text-sm">
                     {navLinks.map((link, i) => {
-                        const isActiveLink = pathname === link.href
+                        const isActiveLink = pathname.startsWith(link.href)
                         return (
                             <Link
                                 href={link.href}
