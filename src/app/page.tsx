@@ -9,7 +9,7 @@ export default function Home() {
             <div className="-mt-4 flex flex-grow flex-col items-center justify-center">
                 <div className="max-w-lg text-center">
                     <H1>
-                        <span>Hi, I'm Andrew,</span>
+                        <span>Hi, I&#39;m Andrew,</span>
                         <span className="text-sky-500"> Software</span>
                         <span className="text-pink-500"> Engineer</span>
                     </H1>
