@@ -14,6 +14,9 @@ dependencies:
   '@t3-oss/env-nextjs':
     specifier: ^0.6.0
     version: 0.6.0(typescript@5.1.6)(zod@3.21.4)
+  '@tailwindcss/container-queries':
+    specifier: ^0.1.1
+    version: 0.1.1(tailwindcss@3.3.2)
   '@types/mdx':
     specifier: ^2.0.5
     version: 2.0.5
@@ -29,6 +32,9 @@ dependencies:
   contentlayer:
     specifier: ^0.3.2
     version: 0.3.4(esbuild@0.18.11)
+  date-fns:
+    specifier: ^2.30.0
+    version: 2.30.0
   next:
     specifier: 13.4.9
     version: 13.4.9(@babel/core@7.22.8)(@opentelemetry/api@1.4.1)(react-dom@18.2.0)(react@18.2.0)
@@ -2686,6 +2692,14 @@ packages:
       '@t3-oss/env-core': 0.6.0(typescript@5.1.6)(zod@3.21.4)
       typescript: 5.1.6
       zod: 3.21.4
+    dev: false
+
+  /@tailwindcss/container-queries@0.1.1(tailwindcss@3.3.2):
+    resolution: {integrity: sha512-p18dswChx6WnTSaJCSGx6lTmrGzNNvm2FtXmiO6AuA1V4U5REyoqwmT6kgAsIMdjo07QdAfYXHJ4hnMtfHzWgA==}
+    peerDependencies:
+      tailwindcss: '>=3.2.0'
+    dependencies:
+      tailwindcss: 3.3.2
     dev: false
 
   /@tailwindcss/line-clamp@0.4.4(tailwindcss@3.3.2):
