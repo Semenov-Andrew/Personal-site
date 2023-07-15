@@ -19,10 +19,8 @@ const navLinks: NavLink[] = [
 
 export const Header: FC = () => {
     const pathname = usePathname()
-    console.log(pathname)
-
     return (
-        <header className="container mx-auto flex items-center py-6">
+        <header className="container mx-auto flex items-center py-4">
             <Link href="/" className="inline-flex items-center space-x-2">
                 <CloudIcon className="h-6 w-6" />
                 <span className="font-bold">Andrew</span>

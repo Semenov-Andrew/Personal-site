@@ -27,7 +27,7 @@ const page: FC<PageProps> = ({ params }) => {
         allAuthors.find(({ slug }) => slug === `/authors/${author}`)
     )
     return (
-        <article className="container relative max-w-3xl py-6 lg:py-10">
+        <article className="relative mx-auto mt-4 w-full max-w-3xl">
             <Link
                 href="/blog"
                 className={cn(
