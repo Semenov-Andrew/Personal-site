@@ -1,6 +1,6 @@
 import { type FC } from "react"
 import Link from "next/link"
-import { FireIcon, NoSymbolIcon } from "@heroicons/react/24/solid"
+import { NoSymbolIcon } from "@heroicons/react/24/solid"
 import { allPosts } from "contentlayer/generated"
 import { compareDesc } from "date-fns"
 
@@ -17,7 +17,10 @@ const Page: FC = () => {
             {posts.length ? (
                 <div className=" grid grid-cols-1 gap-x-5 gap-y-10 sm:grid-cols-2">
                     {posts.map((post) => (
-                        <div className="relative @container first:sm:col-span-2">
+                        <div
+                            className="relative @container first:sm:col-span-2"
+                            key={post._id}
+                        >
                             <article className="overflow-hidden rounded-lg ring-1 ring-secondary">
                                 <div className="flex h-56 w-full flex-col items-center justify-center bg-muted text-sm">
                                     <NoSymbolIcon className="h-16 w-16 text-muted-foreground/80" />
