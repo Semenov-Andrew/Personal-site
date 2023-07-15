@@ -1,18 +1,22 @@
-import { useEffect, type FC } from "react"
+import { type FC } from "react"
 import Link from "next/link"
 import { FireIcon, NoSymbolIcon } from "@heroicons/react/24/solid"
 import { allPosts } from "contentlayer/generated"
+import { compareDesc } from "date-fns"
 
 import { formatDate } from "@/lib/utils"
 
 const Page: FC = () => {
+    const posts = allPosts.sort((a, b) => {
+        return compareDesc(new Date(a.date), new Date(b.date))
+    })
     return (
         <div className="mx-auto max-w-3xl">
             <h1 className="text-4xl font-bold">Blog</h1>
             <hr className="my-6" />
-            {allPosts.length ? (
+            {posts.length ? (
                 <div className=" grid grid-cols-2 gap-x-5 gap-y-10">
-                    {allPosts.map((post) => (
+                    {posts.map((post) => (
                         <div className="relative @container first:col-span-2">
                             <article className="overflow-hidden rounded-lg ring-1 ring-secondary">
                                 <div className="flex h-56 w-full flex-col items-center justify-center bg-muted text-sm">
