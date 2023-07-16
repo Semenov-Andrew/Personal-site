@@ -36,8 +36,8 @@ export const Header: FC = () => {
                                 className={cn(
                                     "px-0.5",
                                     isActiveLink
-                                        ? "border-b border-foreground"
-                                        : "hover:text-foreground/80"
+                                        ? "relative after:absolute after:-bottom-1 after:left-0 after:h-0.5 after:w-full after:bg-primary/20"
+                                        : "text-muted-foreground duration-150 hover:text-foreground"
                                 )}
                             >
                                 {link.title}
