@@ -15,14 +15,12 @@ export default function Home() {
                     </H1>
                 </div>
                 <div className="mt-9 space-x-2">
-                    <Button>
-                        <Link href="/blog">Read my blog</Link>
-                    </Button>
-                    <Button variant={"link"}>
-                        <a href="https://github.com/Andrew-Sem">
-                            Checkout Github
-                        </a>
-                    </Button>
+                    <Link href="/blog">
+                        <Button>Read my blog</Button>
+                    </Link>
+                    <a href="https://github.com/Andrew-Sem">
+                        <Button variant={"link"}>Checkout Github</Button>
+                    </a>
                 </div>
             </div>
             <div className="vignette absolute -z-10 bg-grid-pattern"></div>
