@@ -44,7 +44,9 @@ export default function Home() {
                     </a>
                 </div>
             </div>
-            <div className="vignette absolute -z-10 bg-grid-pattern"></div>
+            <div className="absolute left-1/2 top-1/2 -z-10 h-full max-h-[500px] w-full max-w-4xl -translate-x-1/2 -translate-y-1/2 transform">
+                <div className="vignette h-full w-full bg-grid-pattern" />
+            </div>
         </>
     )
 }
