@@ -9,11 +9,11 @@ export default {
         "./src/content/**/*.{md,mdx}",
     ],
     darkMode: ["class"],
+
     theme: {
         container: {
-            padding: "1rem",
-            screens: {
-                "2xl": "1400px",
+            padding: {
+                DEFAULT: "1rem",
             },
         },
         extend: {
