@@ -16,7 +16,10 @@ export default function Home() {
                         <span className="text-pink-500"> Engineer</span>
                     </H1>
                 </div>
-                <div className="mt-9 flex space-x-2">
+                <p className="mt-5 text-center text-muted-foreground">
+                    Note that this app is still under heavy development
+                </p>
+                <div className="mt-10 flex space-x-2">
                     <Link href="/blog">
                         <Button>Read my blog</Button>
                     </Link>
