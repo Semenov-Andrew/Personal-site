@@ -19,7 +19,7 @@ const Page: FC = () => {
                     <div className="grid grid-cols-1 gap-x-5 gap-y-10 sm:grid-cols-2">
                         {posts.map((post) => (
                             <div
-                                className="relative bg-white @container first:sm:col-span-2"
+                                className="relative @container first:sm:col-span-2"
                                 key={post._id}
                             >
                                 <article className="overflow-hidden rounded-lg ring-1 ring-secondary">

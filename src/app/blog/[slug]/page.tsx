@@ -35,7 +35,7 @@ const page: FC<PageProps> = ({ params }) => {
                     "absolute left-[-200px] top-14 hidden xl:inline-flex"
                 )}
             >
-                <ChevronLeftIcon className="h-3.5 w-3.5 text-black" />
+                <ChevronLeftIcon className="h-3.5 w-3.5 text-foreground" />
                 <span className="ml-2">See all posts</span>
             </Link>
             <div>
@@ -87,7 +87,7 @@ const page: FC<PageProps> = ({ params }) => {
                     href="/blog"
                     className={cn(buttonVariants({ variant: "ghost" }))}
                 >
-                    <ChevronLeftIcon className="h-3.5 w-3.5 text-black" />
+                    <ChevronLeftIcon className="h-3.5 w-3.5 text-foreground" />
                     <span className="ml-2">See all posts</span>
                 </Link>
             </div>
