@@ -77,6 +77,10 @@ export default {
                 "accordion-up": "accordion-up 0.2s ease-out",
             },
         },
+        boxShadow: {
+            vignette: "0 0 200px 120px hsl(var(--background)) inset",
+            "vignette-xs": "0 0 200px 50px hsl(var(--background)) inset",
+        },
         backgroundImage: {
             "grid-pattern": "var(--grid-pattern)",
         },

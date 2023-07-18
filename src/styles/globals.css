@@ -88,7 +88,4 @@
             "rlig" 1,
             "calt" 1;
     }
-    .vignette {
-        box-shadow: 0 0 100px 100px hsl(var(--background)) inset;
-    }
 }
