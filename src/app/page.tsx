@@ -1,6 +1,7 @@
 import Image from "next/image"
 import Link from "next/link"
 import { images } from "@/constants/images"
+import { ArrowUpRightIcon } from "@heroicons/react/24/outline"
 
 import { Button } from "@/components/ui/button"
 import { H1 } from "@/components/ui/h1"
@@ -39,13 +40,16 @@ export default function Home() {
                                 height={20}
                                 alt="GitHub logo"
                             />
-                            <span className="ml-2">Checkout Github</span>
+                            <span className="ml-2 flex space-x-1">
+                                <span className="h-auto">Checkout Github</span>
+                                <ArrowUpRightIcon className="h-3 w-3 underline underline-offset-4" />
+                            </span>
                         </Button>
                     </a>
                 </div>
             </div>
             <div className="absolute left-1/2 top-1/2 -z-10 h-full max-h-[500px] w-full max-w-4xl -translate-x-1/2 -translate-y-1/2 transform">
-                <div className="shadow-vignette-xs h-full w-full bg-grid-pattern sm:shadow-vignette" />
+                <div className="h-full w-full bg-grid-pattern shadow-vignette-xs sm:shadow-vignette" />
             </div>
         </>
     )
