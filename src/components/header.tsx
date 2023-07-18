@@ -22,7 +22,7 @@ const navLinks: NavLink[] = [
 export const Header: FC = () => {
     const pathname = usePathname()
     return (
-        <header className="container mx-auto flex items-center justify-between py-4">
+        <header className="container sticky top-0 z-10 mx-auto flex items-center justify-between bg-background/50 py-4 backdrop-blur-sm">
             <div className="flex items-center">
                 <Link href="/" className="inline-flex items-center space-x-2">
                     <CloudIcon className="h-6 w-6" />
