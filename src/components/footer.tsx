@@ -12,22 +12,6 @@ export const Footer: FC = () => {
                     </span>
                     <span>Andrew-Sem</span>
                 </div>
-                <a href="https://github.com/Andrew-Sem">
-                    <Image
-                        className="dark:hidden"
-                        src={images.github}
-                        width={24}
-                        height={24}
-                        alt="GitHub logo"
-                    />
-                    <Image
-                        className="hidden dark:block"
-                        src={images.githubWhite}
-                        width={24}
-                        height={24}
-                        alt="GitHub logo"
-                    />
-                </a>
             </div>
         </footer>
     )
