@@ -25,7 +25,10 @@ export default function Home() {
                         <Button>Read my blog</Button>
                     </Link>
                     <a href="https://github.com/Andrew-Sem">
-                        <Button className="flex" variant={"outline"}>
+                        <Button
+                            className="flex bg-background"
+                            variant={"outline"}
+                        >
                             <Image
                                 className="hidden dark:block"
                                 src={images.githubWhite}
