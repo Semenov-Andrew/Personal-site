@@ -10,7 +10,7 @@ export default function Home() {
     return (
         <>
             <div className="-mt-4 flex flex-grow flex-col items-center justify-center">
-                <div className="max-w-lg text-center">
+                <div className="max-w-2xl text-center">
                     <H1>
                         <span>Hi, I&#39;m Andrew,</span>
                         <span className="text-sky-500"> Software</span>
@@ -25,7 +25,7 @@ export default function Home() {
                         <Button>Read my blog</Button>
                     </Link>
                     <a href="https://github.com/Andrew-Sem">
-                        <Button className="flex" variant={"link"}>
+                        <Button className="flex" variant={"outline"}>
                             <Image
                                 className="hidden dark:block"
                                 src={images.githubWhite}
