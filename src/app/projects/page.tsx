@@ -1,5 +1,4 @@
-import { FC } from "react"
-import { images } from "@/constants/images"
+import { type FC } from "react"
 
 interface Repo {
     id: string
@@ -25,8 +24,8 @@ const projects: IProject[] = [
 ]
 
 const Project: FC<IProject> = async ({ apiUrl }) => {
-    const res = fetch(apiUrl)
-    const repo: Repo = await (await res).json()
+    const res = await fetch(apiUrl)
+    const repo = (await res.json()) as Repo
     return (
         <a
             className="h-40 space-y-4 rounded-lg border p-4 duration-150 hover:scale-105"
