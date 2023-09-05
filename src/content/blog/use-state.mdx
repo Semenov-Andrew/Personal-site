@@ -1,0 +1,135 @@
+---
+title: useState
+description: All you need to know about useState
+date: "2023-07-19"
+authors:
+    - andrew
+---
+
+So, here is my first not _placeholder_ article. And here I want to dive deep into `useState` hook. _Important:_ I expect that you already familiar with [JSX](https://react.dev/learn/writing-markup-with-jsx) and [arrow functions](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Functions/Arrow_functions#examples).
+
+We gonna start with small and then gradually progress to more advanced things step by step. You can skip chapters if you feel familiar with it.
+
+## Installation
+
+This section is for really beginners. We will briefly go through the installation so that you can replicate some examples and experiment on your own
+
+For work with React you should have installed [Node.js](https://nodejs.org/en) on your machine. We will also need code editor, I will use [vscode](code.visualstudio.com)
+
+First at all, check that Node and npm (package manager for Node applications) installed properly. Open vscode, create new folder for your project and type this into your terminal:
+
+```bash
+node -v
+npm -v
+```
+
+// вставить сюды картинку из терминала
+
+Now open terminal and type into it:
+
+```bash
+npm create vite@latest . -- --template react
+```
+
+This will setup react application in the current folder
+
+## Basic
+
+The `useState` hook is one of the most popular and indispensable tools in React development. Its primary purpose is to inform React when it should re-render a component, a task that React can't handle on its own.
+
+<Callout>Each state update triggers a component re-render.</Callout>
+
+Let's take a look at the simple counter example:
+
+```jsx
+import { useState } from "react"
+
+const Counter = () => {
+    const [count, setCount] = useState(0)
+    const incrementCount = () => {
+        setCount(count + 1)
+    }
+    return <button onClick={incrementCount}>You clicked {count} times</button>
+}
+```
+
+It takes the inital value and returns an array with two elements:
+
+-   current state value - `count`
+-   function to update that value - `setCount`
+
+<Callout>
+The convention is to name state variables like [something, setSomething] using array [destructuring](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/Destructuring_assignment).
+
+</Callout>
+
+React takes care of re-rendering the component whenever the state is updated. To update the state, i.e., change the value of the variable, you should pass the new value to the function returned by `useState`. It says to React: Hey, I just updated this thing, can u please re-render element to show updated value?
+
+In our case when we click on the button, we call `incrementCount` function, that call `setCount` with value = `count + 1`.
+
+And thats it. When you want to add some dynamic value in your app, in most cases you should use `useState`.
+
+<Callout>
+    You can use `useState` as much as you want in component. But remember that
+    `useState` like all the other hooks can be called only inside another
+    function: in functional component as we did before or in custom hook, but
+    this this is beyond the scope of this article
+</Callout>
+
+## Dive deep
+
+### Is useState async?
+
+You might wonder if useState is async, and there are two reasons why you might think it is.
+
+#### 1. Why does it grab previously value?
+
+Consider this example:
+
+```jsx
+const Search = () => {
+    const [query, setQuery] = useState("")
+    const [data, setData] = useState([])
+
+    const onChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        setQuery(e.target.value)
+        fetch(`/search/${query}`)
+            .then(res => res.json())
+            .then(setData)
+    }
+
+    return (
+        <div>
+            <input value={query} onChange={onChange} />
+            {data.map(...)}
+        </div>
+    )
+}
+```
+
+If a user types `"a"` into the input, you might expect the request to be sent to `"/search/a"`, but it's not. It will be sent to `"/search/"`, as if the query hasn't been updated.
+
+Why does this happen? The answer is that _states behaves like a snapshot_. The state will be updated only at the next render. Once `onChange` function is created, it uses initial value, i.e. `""`, resulting in a request to `"/search/"`.
+
+Whats next? As i mentioned before:
+
+> Each state update triggers component re-render.
+
+According to this, the component is being recreated again. And now `query` has value `"a"`. But again, when we type something into search, we will still get old value in query - `"a"` for now.
+
+If you need to use the next state, you can save it in a variable before passing it to the `set` function:
+
+```jsx
+/* ... */
+const nextQuery = e.target.value
+setQuery(nextQuery)
+/* ... */
+```
+
+#### Next thing
+
+So, how does react
+
+## References
+
+https://react.dev/learn/state-as-a-snapshot#rendering-takes-a-snapshot-in-time

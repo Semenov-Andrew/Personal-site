@@ -44,6 +44,7 @@ code > [data-line]::before {
     text-align: right;
     color: gray;
     left: 0;
+    user-select: none;
 }
 
 code[data-line-numbers-max-digits="2"] > [data-line]::before {

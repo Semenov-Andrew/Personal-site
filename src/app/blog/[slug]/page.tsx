@@ -38,7 +38,7 @@ const page: FC<PageProps> = ({ params }) => {
                 <ChevronLeftIcon className="h-3.5 w-3.5 text-foreground" />
                 <span className="ml-2">See all posts</span>
             </Link>
-            <div>
+            <div className="mb-10">
                 {post.date && (
                     <time
                         dateTime={post.date}
