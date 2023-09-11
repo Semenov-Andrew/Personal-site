@@ -1,5 +1,7 @@
 import { type FC } from "react"
 
+import { ThemeToggle } from "./theme-toggle"
+
 export const Footer: FC = () => {
     return (
         <footer className="mt-10 py-6">

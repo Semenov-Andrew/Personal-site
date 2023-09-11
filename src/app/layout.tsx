@@ -5,7 +5,7 @@ import "@/styles/mdx.css"
 
 import type { Metadata } from "next"
 import { Inter } from "next/font/google"
-import { ClerkProvider } from "@clerk/nextjs"
+import { ClerkProvider, currentUser, useUser } from "@clerk/nextjs"
 
 import { cn } from "@/lib/utils"
 import { Footer } from "@/components/footer"
@@ -18,11 +18,12 @@ export const metadata: Metadata = {
     description: "Andrew's Semyonov website",
 }
 
-export default function RootLayout({
+export default async function RootLayout({
     children,
 }: {
     children: React.ReactNode
 }) {
+    const user = await currentUser()
     return (
         <ClerkProvider>
             <html lang="en" suppressHydrationWarning>
@@ -34,7 +35,7 @@ export default function RootLayout({
                     )}
                 >
                     <ThemeProvider attribute="class">
-                        <Header />
+                        <Header user={user} />
                         <main className="container relative mx-auto flex flex-grow flex-col pt-4">
                             {children}
                         </main>

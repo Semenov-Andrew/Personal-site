@@ -10,7 +10,7 @@ import "./src/env.mjs"
 const config = {
     reactStrictMode: true,
     images: {
-        domains: ["images.clerk.dev"],
+        domains: ["images.clerk.dev", "img.clerk.com"],
     },
 }
 
