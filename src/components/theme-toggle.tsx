@@ -6,6 +6,7 @@ import {
     MoonIcon,
     SunIcon,
 } from "@heroicons/react/24/outline"
+import { ChevronDownIcon } from "@radix-ui/react-icons"
 import { useTheme } from "next-themes"
 
 import {
@@ -25,10 +26,15 @@ export const ThemeToggle: FC = () => {
     return (
         <DropdownMenu>
             <DropdownMenuTrigger asChild>
-                <Button variant={"ghost"} className="py-0">
+                <Button
+                    variant={"ghost"}
+                    className="space-x-1 py-0"
+                    size={"sm"}
+                >
                     <SunIcon className="h-6 w-6 dark:hidden" />
                     <MoonIcon className="hidden h-6 w-6 dark:block" />
                     <span className="sr-only">Toggle theme</span>
+                    <ChevronDownIcon className="h-4 w-4" />
                 </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent>
