@@ -3,7 +3,7 @@ import "@/styles/mdx.css"
 
 import type { Metadata } from "next"
 import { Inter } from "next/font/google"
-import { ClerkProvider, currentUser, useUser } from "@clerk/nextjs"
+import { ClerkProvider, currentUser } from "@clerk/nextjs"
 
 import { cn } from "@/lib/utils"
 import { Footer } from "@/components/footer"

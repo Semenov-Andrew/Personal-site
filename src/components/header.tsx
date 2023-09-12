@@ -1,7 +1,7 @@
-import { FC } from "react"
+import { type FC } from "react"
 import Image from "next/image"
 import { SignInButton, SignOutButton } from "@clerk/nextjs"
-import { User } from "@clerk/nextjs/api"
+import { type User } from "@clerk/nextjs/api"
 import { ChevronDownIcon } from "@radix-ui/react-icons"
 
 import {

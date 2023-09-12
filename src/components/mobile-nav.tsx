@@ -1,19 +1,17 @@
 "use client"
 
-import { FC } from "react"
+import { type FC } from "react"
 import Link from "next/link"
 import { usePathname } from "next/navigation"
 import { navLinks } from "@/constants/nav"
-import { HamburgerMenuIcon, HomeIcon } from "@radix-ui/react-icons"
+import { HamburgerMenuIcon } from "@radix-ui/react-icons"
 
 import { cn } from "@/lib/utils"
 import {
     Sheet,
     SheetClose,
     SheetContent,
-    SheetDescription,
     SheetHeader,
-    SheetTitle,
     SheetTrigger,
 } from "@/components/ui/sheet"
 
