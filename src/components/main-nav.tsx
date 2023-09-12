@@ -13,7 +13,7 @@ export const MainNav: FC = () => {
     return (
         <div className="hidden items-center lg:flex">
             {navLinks.length ? (
-                <nav className="ml-6 flex space-x-3 text-sm">
+                <nav className="flex space-x-3 text-sm">
                     {navLinks.map((link, i) => {
                         let isActiveLink = pathname.startsWith(link.href)
                         if (link.href === "/" && pathname !== "/")
