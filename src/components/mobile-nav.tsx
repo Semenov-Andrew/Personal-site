@@ -1,8 +1,15 @@
-import { FC } from "react"
-import { HamburgerMenuIcon } from "@radix-ui/react-icons"
+"use client"
 
+import { FC } from "react"
+import Link from "next/link"
+import { usePathname } from "next/navigation"
+import { navLinks } from "@/constants/nav"
+import { HamburgerMenuIcon, HomeIcon } from "@radix-ui/react-icons"
+
+import { cn } from "@/lib/utils"
 import {
     Sheet,
+    SheetClose,
     SheetContent,
     SheetDescription,
     SheetHeader,
@@ -11,22 +18,43 @@ import {
 } from "@/components/ui/sheet"
 
 export const MobileNav: FC = () => {
-    // Можно сделать так: сделать один общий хэдер
-    // и в нём подключить навигацию мобильную и навигацию основную
-    // соотвественно, правая часть останется та же
+    const pathname = usePathname()
     return (
         <Sheet>
             <SheetTrigger className="lg:hidden" asChild>
-                <HamburgerMenuIcon className="h-6 w-6" />
+                <button>
+                    <HamburgerMenuIcon className="h-6 w-6" />
+                </button>
             </SheetTrigger>
             <SheetContent side={"left"}>
                 <SheetHeader>
-                    <SheetTitle>Are you sure absolutely sure?</SheetTitle>
-                    <SheetDescription>
-                        This action cannot be undone. This will permanently
-                        delete your account and remove your data from our
-                        servers.
-                    </SheetDescription>
+                    {navLinks.length ? (
+                        <nav className="flex flex-col space-y-3 pt-5">
+                            {navLinks.map((link, i) => {
+                                let isActiveLink = pathname.startsWith(
+                                    link.href
+                                )
+                                if (link.href === "/" && pathname !== "/")
+                                    isActiveLink = false
+                                return (
+                                    <SheetClose asChild key={link.href}>
+                                        <Link
+                                            href={link.href}
+                                            key={i}
+                                            className={cn(
+                                                "px-0.5 font-medium",
+                                                isActiveLink
+                                                    ? ""
+                                                    : "text-muted-foreground duration-150 hover:text-foreground"
+                                            )}
+                                        >
+                                            {link.title}
+                                        </Link>
+                                    </SheetClose>
+                                )
+                            })}
+                        </nav>
+                    ) : null}
                 </SheetHeader>
             </SheetContent>
         </Sheet>

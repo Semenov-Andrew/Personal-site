@@ -27,14 +27,14 @@ export const Header: FC<HeaderProps> = ({ user }) => {
         <header className="container sticky top-0 z-10 mx-auto flex  items-center justify-between bg-background/50 py-4 backdrop-blur-sm">
             <MainNav />
             <MobileNav />
-            <div className="flex">
+            <div className="flex lg:space-x-2">
                 <ThemeToggle />
                 {user ? (
                     <DropdownMenu>
                         <DropdownMenuTrigger asChild>
                             <Button
                                 variant={"ghost"}
-                                className="space-x-2 text-muted-foreground"
+                                className="space-x-1"
                                 size={"sm"}
                             >
                                 <span className="hidden md:block">
@@ -47,6 +47,7 @@ export const Header: FC<HeaderProps> = ({ user }) => {
                                     alt="profile pic"
                                     className="shrink-0 cursor-pointer rounded-full"
                                 />
+                                <ChevronDownIcon className="h-4 w-4" />
                             </Button>
                         </DropdownMenuTrigger>
                         <DropdownMenuContent>
