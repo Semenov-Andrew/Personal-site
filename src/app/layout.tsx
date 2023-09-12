@@ -1,5 +1,3 @@
-import { Header } from "@/components/header"
-
 import "@/styles/globals.css"
 import "@/styles/mdx.css"
 
@@ -9,6 +7,7 @@ import { ClerkProvider, currentUser, useUser } from "@clerk/nextjs"
 
 import { cn } from "@/lib/utils"
 import { Footer } from "@/components/footer"
+import { Header } from "@/components/header"
 import { ThemeProvider } from "@/components/theme-provider"
 
 const inter = Inter({ subsets: ["latin"] })

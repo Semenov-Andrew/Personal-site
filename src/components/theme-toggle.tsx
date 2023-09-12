@@ -34,7 +34,6 @@ export const ThemeToggle: FC = () => {
                     <SunIcon className="h-6 w-6 dark:hidden" />
                     <MoonIcon className="hidden h-6 w-6 dark:block" />
                     <span className="sr-only">Toggle theme</span>
-                    <ChevronDownIcon className="h-4 w-4 " />
                 </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent>
