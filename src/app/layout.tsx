@@ -1,6 +1,8 @@
 import "@/styles/globals.css"
 import "@/styles/mdx.css"
 
+// import "@uploadthing/react/styles.css"
+
 import type { Metadata } from "next"
 import { Inter } from "next/font/google"
 import { ClerkProvider } from "@clerk/nextjs"
