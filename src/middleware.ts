@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server"
 import { authMiddleware, clerkClient } from "@clerk/nextjs"
 
-import { UserRole } from "./types"
+import { type UserRole } from "./types"
 
 // This example protects all routes including api/trpc routes
 // Please edit this to allow other routes to be public as needed.

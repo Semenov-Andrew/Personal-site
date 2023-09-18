@@ -15,7 +15,7 @@ export const metadata: Metadata = {
     description: "Andrew's Semyonov website",
 }
 
-export default async function RootLayout({
+export default function RootLayout({
     children,
 }: {
     children: React.ReactNode

@@ -1,4 +1,4 @@
-import { ReactNode } from "react"
+import { type ReactNode } from "react"
 import { currentUser } from "@clerk/nextjs"
 
 import { Footer } from "@/components/footer"
