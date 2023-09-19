@@ -1,5 +1,10 @@
 "use client"
 
+import Image from "next/image"
+import { $api } from "@/http/api"
+import { Meme } from "@prisma/client"
+import { useMutation } from "@tanstack/react-query"
+
 import { UploadDropzone } from "@/lib/uploadthing"
 import { buttonVariants } from "@/components/ui/button"
 import { useToast } from "@/components/ui/use-toast"
@@ -41,7 +46,7 @@ const DashboardPage = () => {
                         })
                     }}
                 />
-                <div className="rounded-md bg-muted">
+                <div className="relative flex items-center justify-center rounded-md bg-muted">
                     {/* <Button
                         onClick={() => {
                             toast({
