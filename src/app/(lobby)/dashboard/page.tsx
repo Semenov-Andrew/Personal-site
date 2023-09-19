@@ -1,18 +1,21 @@
 "use client"
 
-import { UploadButton, UploadDropzone } from "@/lib/uploadthing"
+import { UploadDropzone } from "@/lib/uploadthing"
 import { buttonVariants } from "@/components/ui/button"
+import { useToast } from "@/components/ui/use-toast"
 
 const DashboardPage = () => {
+    const { toast } = useToast()
     return (
         <div>
             <h2>Memes</h2>
-            <div className="grid grid-cols-2">
+            <div className="mt-4 grid gap-4 md:grid-cols-2">
                 <UploadDropzone
                     appearance={{
                         uploadIcon: "w-12 h-12",
                         button: buttonVariants({ variant: "default" }),
-                        container: "border-dashed p-6 min-h-[300px]",
+                        container:
+                            "border-dashed p-6 min-h-[300px] mt-0 border-2",
                     }}
                     content={{
                         button({ ready, isUploading }) {
@@ -23,16 +26,34 @@ const DashboardPage = () => {
                     }}
                     endpoint="imageUploader"
                     onClientUploadComplete={(res) => {
-                        // Do something with the response
-                        console.log("Files: ", res)
-                        alert("Upload Completed")
+                        toast({
+                            title: "Upload Completed",
+                            description: `Files: ${res
+                                ?.map((file) => file.name)
+                                .join(", ")}`,
+                        })
                     }}
                     onUploadError={(error: Error) => {
-                        // Do something with the error.
-                        alert(`ERROR! ${error.message}`)
+                        toast({
+                            variant: "destructive",
+                            title: "Error",
+                            description: error.message,
+                        })
                     }}
                 />
-                <div></div>
+                <div className="rounded-md bg-muted">
+                    {/* <Button
+                        onClick={() => {
+                            toast({
+                                title: "Scheduled: Catch up",
+                                description:
+                                    "Friday, February 10, 2023 at 5:57 PM",
+                            })
+                        }}
+                    >
+                        Show toast
+                    </Button> */}
+                </div>
             </div>
         </div>
     )
