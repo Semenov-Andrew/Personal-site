@@ -57,17 +57,17 @@ export const Header: FC<HeaderProps> = ({ user }) => {
                                 <>
                                     <DropdownMenuSeparator />
 
-                                    <DropdownMenuItem>
-                                        <Link href={"/dashboard"}>
+                                    <Link href={"/dashboard"}>
+                                        <DropdownMenuItem>
                                             Dashboard
-                                        </Link>
-                                    </DropdownMenuItem>
+                                        </DropdownMenuItem>
+                                    </Link>
                                 </>
                             ) : null}
                             <DropdownMenuSeparator />
-                            <DropdownMenuItem>
-                                <SignOutButton></SignOutButton>
-                            </DropdownMenuItem>
+                            <SignOutButton>
+                                <DropdownMenuItem>Sign Out</DropdownMenuItem>
+                            </SignOutButton>
                         </DropdownMenuContent>
                     </DropdownMenu>
                 ) : (
