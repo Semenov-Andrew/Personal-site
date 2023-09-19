@@ -1,5 +1,6 @@
 import { type FC } from "react"
 import Image from "next/image"
+import Link from "next/link"
 import { SignInButton, SignOutButton } from "@clerk/nextjs"
 import { type User } from "@clerk/nextjs/api"
 import { ChevronDownIcon } from "@radix-ui/react-icons"
@@ -52,6 +53,17 @@ export const Header: FC<HeaderProps> = ({ user }) => {
                         </DropdownMenuTrigger>
                         <DropdownMenuContent>
                             <DropdownMenuLabel>My Account</DropdownMenuLabel>
+                            {user.publicMetadata.role === "admin" ? (
+                                <>
+                                    <DropdownMenuSeparator />
+
+                                    <DropdownMenuItem>
+                                        <Link href={"/dashboard"}>
+                                            Dashboard
+                                        </Link>
+                                    </DropdownMenuItem>
+                                </>
+                            ) : null}
                             <DropdownMenuSeparator />
                             <DropdownMenuItem>
                                 <SignOutButton></SignOutButton>
