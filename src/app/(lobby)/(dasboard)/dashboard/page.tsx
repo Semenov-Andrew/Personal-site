@@ -2,7 +2,7 @@
 
 import Image from "next/image"
 import { $api } from "@/http/api"
-import { Meme } from "@prisma/client"
+import { type Meme } from "@prisma/client"
 import { useMutation } from "@tanstack/react-query"
 
 import { UploadDropzone } from "@/lib/uploadthing"
@@ -40,7 +40,7 @@ const DashboardPage = () => {
                         },
                     }}
                     endpoint="imageUploader"
-                    onClientUploadComplete={async (res) => {
+                    onClientUploadComplete={(res) => {
                         toast({
                             title: "Upload Completed",
                             description: `Files: ${res
@@ -48,7 +48,7 @@ const DashboardPage = () => {
                                 .join(", ")}`,
                         })
                         if(res){
-                            await mutation.mutateAsync({url: res[0].url})
+                            mutation.mutate({url: res[0].url})
                             setUploadedImgSrc(res[0].url)
                         } 
                     }}

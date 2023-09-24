@@ -1,7 +1,8 @@
-import { NextRequest, NextResponse } from "next/server"
+import { type NextRequest, NextResponse } from "next/server"
 import { currentUser } from "@clerk/nextjs"
 
 import { prisma } from "@/lib/db"
+import { type Meme } from "@prisma/client"
 
 export const POST = async (req: NextRequest) => {
     const user = await currentUser()
@@ -11,8 +12,8 @@ export const POST = async (req: NextRequest) => {
             statusText: "Only admin accessible",
         })
     try{
-        const {imageSrc, title} = await req.json()
-        const newMeme = await prisma.meme.create({
+        const {imageSrc, title} = await req.json() as {imageSrc: string, title?:string}
+        const newMeme: Meme | undefined = await prisma.meme.create({
             data: {
                 imageSrc,
                 title,
@@ -28,10 +29,5 @@ export const POST = async (req: NextRequest) => {
         });
     }
     
-
    
-}
-
-export const GET = async () => {
-    return NextResponse.json({data: "losos"})
 }
