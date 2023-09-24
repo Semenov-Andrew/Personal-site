@@ -1,22 +1,37 @@
-import { NextResponse } from "next/server"
+import { NextRequest, NextResponse } from "next/server"
 import { currentUser } from "@clerk/nextjs"
 
 import { prisma } from "@/lib/db"
 
-export const POST = async (req: Request) => {
+export const POST = async (req: NextRequest) => {
     const user = await currentUser()
     if (user?.publicMetadata.role !== "admin")
         return new Response(null, {
             status: 403,
             statusText: "Only admin accessible",
         })
-    const { imageSrc, title } = await req.json()
-    const newMeme = prisma.meme.create({
-        data: {
-            imageSrc,
-            title,
-        },
-    })
+    try{
+        const {imageSrc, title} = await req.json()
+        const newMeme = await prisma.meme.create({
+            data: {
+                imageSrc,
+                title,
+            },
+        })
+        return NextResponse.json({ data: newMeme })
+    }
+    catch(e){
+        console.error("Error creating meme:", e);
+        return new Response("Internal Server Error", {
+            status: 500,
+            statusText: "Internal Server Error",
+        });
+    }
+    
 
-    return NextResponse.json({ data: newMeme })
+   
+}
+
+export const GET = async () => {
+    return NextResponse.json({data: "losos"})
 }

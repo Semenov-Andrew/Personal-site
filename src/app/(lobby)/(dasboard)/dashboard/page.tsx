@@ -8,6 +8,7 @@ import { useMutation } from "@tanstack/react-query"
 import { UploadDropzone } from "@/lib/uploadthing"
 import { buttonVariants } from "@/components/ui/button"
 import { useToast } from "@/components/ui/use-toast"
+import { MemeService } from "@/services/MemeService"
 
 const DashboardPage = () => {
     const { toast } = useToast()
@@ -30,13 +31,14 @@ const DashboardPage = () => {
                         },
                     }}
                     endpoint="imageUploader"
-                    onClientUploadComplete={(res) => {
+                    onClientUploadComplete={async (res) => {
                         toast({
                             title: "Upload Completed",
                             description: `Files: ${res
                                 ?.map((file) => file.name)
                                 .join(", ")}`,
                         })
+                        if(res) await MemeService.uploadMemeMetadata(res[0].url)
                     }}
                     onUploadError={(error: Error) => {
                         toast({
