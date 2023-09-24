@@ -11,14 +11,12 @@ datasource db {
   relationMode = "prisma"
 }
 
-model Post {
-  id        String   @id @default(cuid())
+model Meme{
+  id String @id @default(cuid())
+  imageSrc String
+  title String?
+  likesCount Int @default(0)
+  commentsCount Int @default(0)
+  viewsCount Int @default(0)
   createdAt DateTime @default(now())
-  content   String   @db.VarChar(255)
-  role      Role     @default(USER)
-}
-
-enum Role {
-  USER
-  ADMIN
 }

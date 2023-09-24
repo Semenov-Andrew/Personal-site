@@ -6,6 +6,8 @@ import { Inter } from "next/font/google"
 import { ClerkProvider } from "@clerk/nextjs"
 
 import { cn } from "@/lib/utils"
+import { Toaster } from "@/components/ui/toaster"
+import { QueryProvider } from "@/components/query-provider"
 import { ThemeProvider } from "@/components/theme-provider"
 
 const inter = Inter({ subsets: ["latin"] })
@@ -30,7 +32,12 @@ export default function RootLayout({
                         "flex min-h-screen flex-col"
                     )}
                 >
-                    <ThemeProvider attribute="class">{children}</ThemeProvider>
+                    <ThemeProvider attribute="class">
+                        <QueryProvider>
+                            {children}
+                            <Toaster />
+                        </QueryProvider>
+                    </ThemeProvider>
                 </body>
             </html>
         </ClerkProvider>
