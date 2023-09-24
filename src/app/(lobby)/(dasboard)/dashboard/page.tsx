@@ -9,9 +9,19 @@ import { UploadDropzone } from "@/lib/uploadthing"
 import { buttonVariants } from "@/components/ui/button"
 import { useToast } from "@/components/ui/use-toast"
 import { MemeService } from "@/services/MemeService"
+import { useState } from "react"
+import { Spinner } from "@/components/ui/spinner"
 
 const DashboardPage = () => {
+    const mutation = useMutation({
+        mutationFn: ({url, title}: {url: string, title?: string}) => {
+            return $api.post<Meme>("memes", {imageSrc: url, title})
+        }
+    })
+    const [uploadedImgSrc, setUploadedImgSrc] = useState("")
     const { toast } = useToast()
+    if(mutation.isError) toast({title: "Error while uploading images"})
+
     return (
         <div>
             <h2>Memes</h2>
@@ -38,7 +48,10 @@ const DashboardPage = () => {
                                 ?.map((file) => file.name)
                                 .join(", ")}`,
                         })
-                        if(res) await MemeService.uploadMemeMetadata(res[0].url)
+                        if(res){
+                            await mutation.mutateAsync({url: res[0].url})
+                            setUploadedImgSrc(res[0].url)
+                        } 
                     }}
                     onUploadError={(error: Error) => {
                         toast({
@@ -49,17 +62,10 @@ const DashboardPage = () => {
                     }}
                 />
                 <div className="relative flex items-center justify-center rounded-md bg-muted">
-                    {/* <Button
-                        onClick={() => {
-                            toast({
-                                title: "Scheduled: Catch up",
-                                description:
-                                    "Friday, February 10, 2023 at 5:57 PM",
-                            })
-                        }}
-                    >
-                        Show toast
-                    </Button> */}
+                    {mutation.isLoading
+                        ? <Spinner/>
+                        : mutation.isSuccess && uploadedImgSrc !== "" && <Image height={256} width={256} src={uploadedImgSrc} alt="uploaded img"/>
+                    }
                 </div>
             </div>
         </div>
