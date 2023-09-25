@@ -1,5 +1,4 @@
 import { MemeCard } from "@/components/meme-card"
-import { env } from "@/env.mjs"
 
 export interface Meme {
     id: string
@@ -10,7 +9,9 @@ export interface Meme {
 }
 
 const getMemes = async () => {
-    const res = await fetch(`http://localhost:3000/api/memes`, {next: {revalidate: 3600}})
+    const res = await fetch(`http://localhost:3000/api/memes`, {next: {
+        revalidate: process.env.NODE_ENV === "production" ? 3600 : 1
+    }})
     return res.json() 
 }
 
