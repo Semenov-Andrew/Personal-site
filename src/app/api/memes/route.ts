@@ -3,6 +3,7 @@ import { currentUser } from "@clerk/nextjs"
 
 import { prisma } from "@/lib/db"
 import { type Meme } from "@prisma/client"
+import { revalidateTag } from "next/cache"
 
 export const POST = async (req: NextRequest) => {
     const user = await currentUser()
@@ -28,6 +29,17 @@ export const POST = async (req: NextRequest) => {
             statusText: "Internal Server Error",
         });
     }
-    
-   
+}
+
+export const GET = async (request: NextRequest) => {
+    try{
+        const memes = await prisma.meme.findMany()
+        return new Response(JSON.stringify(memes))
+    } catch(e){
+        console.error("Error creating meme:", e);
+        return new Response("Internal Server Error", {
+            status: 500,
+            statusText: "Internal Server Error",
+        });
+    }
 }

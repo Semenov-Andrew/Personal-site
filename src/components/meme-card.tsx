@@ -2,7 +2,7 @@ import { type FC } from "react"
 import Image from "next/image"
 import { ChatBubbleIcon, EyeOpenIcon, HeartIcon } from "@radix-ui/react-icons"
 
-import { Meme } from "@/app/memes/page"
+import { Meme } from "@/app/(lobby)/memes/page"
 
 import { Button } from "./ui/button"
 
@@ -15,7 +15,7 @@ export const MemeCard: FC<MemeCardProps> = ({ meme }) => {
         <div className="flex min-h-[400px] w-full flex-col overflow-hidden rounded-lg">
             <div className=" flex flex-1 justify-center rounded-md bg-muted px-4 py-2">
                 <Image
-                    src={meme.imageUrl}
+                    src={meme.imageSrc}
                     height={300}
                     width={300}
                     alt="meme"
