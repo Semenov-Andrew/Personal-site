@@ -10,7 +10,7 @@ export interface Meme {
 }
 
 const getMemes = async () => {
-    const res = await fetch(`http://localhost:3000/api/memes`, {next: {revalidate: 3600}})
+    const res = await fetch(`http://localhost:3000/api/memes`, {next: {revalidate: 1}})
     return res.json() 
 }
 
