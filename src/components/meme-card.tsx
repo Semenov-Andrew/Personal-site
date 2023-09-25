@@ -13,7 +13,7 @@ interface MemeCardProps {
 export const MemeCard: FC<MemeCardProps> = ({ meme }) => {
     return (
         <div className="flex flex-col overflow-hidden w-screen sm:w-full ml-[calc(50%-50vw)] sm:ml-0">
-            <div className="flex flex-1 justify-center items-center bg-muted rounded-lg lg:px-4 lg:py-2 ">
+            <div className="flex flex-1 justify-center items-center bg-muted sm:rounded-lg lg:px-4 lg:py-2 ">
                 <div className="flex-1 relative min-h-[420px]">
                     <Image
                         src={meme.imageSrc}
