@@ -3,11 +3,11 @@ import "@/styles/mdx.css"
 
 import type { Metadata } from "next"
 import { Inter } from "next/font/google"
-import { ClerkProvider, currentUser } from "@clerk/nextjs"
+import { ClerkProvider } from "@clerk/nextjs"
 
 import { cn } from "@/lib/utils"
-import { Footer } from "@/components/footer"
-import { Header } from "@/components/header"
+import { Toaster } from "@/components/ui/toaster"
+import { QueryProvider } from "@/components/query-provider"
 import { ThemeProvider } from "@/components/theme-provider"
 
 const inter = Inter({ subsets: ["latin"] })
@@ -17,12 +17,11 @@ export const metadata: Metadata = {
     description: "Andrew's Semyonov website",
 }
 
-export default async function RootLayout({
+export default function RootLayout({
     children,
 }: {
     children: React.ReactNode
 }) {
-    const user = await currentUser()
     return (
         <ClerkProvider>
             <html lang="en" suppressHydrationWarning>
@@ -34,11 +33,10 @@ export default async function RootLayout({
                     )}
                 >
                     <ThemeProvider attribute="class">
-                        <Header user={user} />
-                        <main className="container relative mx-auto flex flex-grow flex-col pt-4">
+                        <QueryProvider>
                             {children}
-                        </main>
-                        <Footer />
+                            <Toaster />
+                        </QueryProvider>
                     </ThemeProvider>
                 </body>
             </html>
