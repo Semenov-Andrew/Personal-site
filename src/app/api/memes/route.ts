@@ -33,7 +33,11 @@ export const POST = async (req: NextRequest) => {
 
 export const GET = async (request: NextRequest) => {
     try{
-        const memes = await prisma.meme.findMany()
+        const memes = await prisma.meme.findMany({
+            orderBy: {
+                createdAt: "desc"
+            }
+        })
         return new Response(JSON.stringify(memes))
     } catch(e){
         console.error("Error creating meme:", e);
