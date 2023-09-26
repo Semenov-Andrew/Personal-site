@@ -1,12 +1,5 @@
 import { MemeCard } from "@/components/meme-card"
-
-export interface Meme {
-    id: string
-    imageSrc: string
-    likesCount: number
-    commentsCount: number
-    viewsCount: number
-}
+import { Meme } from "@prisma/client"
 
 const getMemes = async () => {
     const res = await fetch(`http://localhost:3000/api/memes`, {next: {
