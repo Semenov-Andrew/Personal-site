@@ -1,5 +1,6 @@
 "use client"
 
+import { useState } from "react"
 import Image from "next/image"
 import { $api } from "@/http/api"
 import { type Meme } from "@prisma/client"
@@ -7,19 +8,19 @@ import { useMutation } from "@tanstack/react-query"
 
 import { UploadDropzone } from "@/lib/uploadthing"
 import { buttonVariants } from "@/components/ui/button"
-import { useToast } from "@/components/ui/use-toast"
-import { useState } from "react"
 import { Spinner } from "@/components/ui/spinner"
+import { useToast } from "@/components/ui/use-toast"
 
 const DashboardPage = () => {
     const mutation = useMutation({
-        mutationFn: ({url, title}: {url: string, title?: string}) => {
-            return $api.post<Meme>("memes", {imageSrc: url, title})
-        }
+        mutationFn: ({ url, title }: { url: string; title?: string }) => {
+            return $api.post<Meme>("memes", { imageSrc: url, title })
+        },
     })
     const [uploadedImgSrc, setUploadedImgSrc] = useState("")
     const { toast } = useToast()
-    if(mutation.isError) toast({title: "Error while uploading images"})
+
+    if (mutation.isError) toast({ title: "Error while uploading images" })
 
     return (
         <div>
@@ -47,10 +48,10 @@ const DashboardPage = () => {
                                 ?.map((file) => file.name)
                                 .join(", ")}`,
                         })
-                        if(res){
-                            mutation.mutate({url: res[0].url})
+                        if (res) {
+                            mutation.mutate({ url: res[0].url })
                             setUploadedImgSrc(res[0].url)
-                        } 
+                        }
                     }}
                     onUploadError={(error: Error) => {
                         toast({
@@ -60,11 +61,20 @@ const DashboardPage = () => {
                         })
                     }}
                 />
-                <div className="relative flex items-center justify-center rounded-md bg-muted lg:min-h-[300px] min-h-[200px]">
-                    {mutation.isLoading
-                        ? <Spinner/>
-                        : mutation.isSuccess && uploadedImgSrc !== "" && <Image height={256} width={256} src={uploadedImgSrc} alt="uploaded img"/>
-                    }
+                <div className="relative flex min-h-[200px] items-center justify-center rounded-md bg-muted lg:min-h-[300px]">
+                    {mutation.isLoading ? (
+                        <Spinner />
+                    ) : (
+                        mutation.isSuccess &&
+                        uploadedImgSrc !== "" && (
+                            <Image
+                                height={256}
+                                width={256}
+                                src={uploadedImgSrc}
+                                alt="uploaded img"
+                            />
+                        )
+                    )}
                 </div>
             </div>
         </div>
