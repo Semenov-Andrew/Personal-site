@@ -27,7 +27,7 @@ export const MobileNav: FC = () => {
             <SheetContent side={"left"}>
                 <SheetHeader>
                     {navLinks.length ? (
-                        <nav className="flex flex-col space-y-3 pt-5">
+                        <nav className="flex flex-col space-y-4 pt-5">
                             {navLinks.map((link, i) => {
                                 let isActiveLink = pathname.startsWith(
                                     link.href
@@ -40,7 +40,7 @@ export const MobileNav: FC = () => {
                                             href={link.href}
                                             key={i}
                                             className={cn(
-                                                "px-0.5 font-medium",
+                                                "px-0.5 text-lg font-medium",
                                                 isActiveLink
                                                     ? ""
                                                     : "text-muted-foreground duration-150 hover:text-foreground"
