@@ -1,4 +1,4 @@
-import { currentUser } from '@clerk/nextjs';
+import { currentUser } from "@clerk/nextjs"
 import { createUploadthing, type FileRouter } from "uploadthing/next"
 
 const f = createUploadthing()
@@ -10,14 +10,14 @@ export const ourFileRouter = {
         // Set permissions and file types for this FileRoute
         .middleware(async () => {
             // This code runs on your server before upload
-            const user = await currentUser();
- 
+            const user = await currentUser()
+
             // Throw if user isn't signed in
             if (user?.publicMetadata.role !== "admin")
-              throw new Error("You must be an admin to upload a picture");
-         
+                throw new Error("You must be an admin to upload a picture")
+
             // Return userId to be used in onUploadComplete
-            return { userId: user.id };
+            return { userId: user.id }
         })
         .onUploadComplete(({ metadata, file }) => {
             // This code RUNS ON YOUR SERVER after upload
