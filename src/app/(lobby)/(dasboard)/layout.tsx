@@ -1,13 +1,16 @@
 import { type ReactNode } from "react"
-import { redirect } from "next/navigation"
-import { currentUser } from "@clerk/nextjs"
+import { getKindeServerSession } from "@kinde-oss/kinde-auth-nextjs/server"
+
+import { Permissions } from "@/lib/permissions"
+import { NoAccess } from "@/components/no-access"
 
 export default async function DashboardLayout({
     children,
 }: {
     children: ReactNode
 }) {
-    const user = await currentUser()
-    if (user?.publicMetadata.role !== "admin") redirect("/")
+    const { getPermission } = getKindeServerSession()
+    const dashboardAccess = getPermission(Permissions.dashboardAccess)
+    if (!dashboardAccess.isGranted) return <NoAccess />
     return <>{children}</>
 }

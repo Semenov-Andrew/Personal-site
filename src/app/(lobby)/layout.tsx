@@ -1,15 +1,13 @@
 import { type ReactNode } from "react"
-import { currentUser } from "@clerk/nextjs"
+import { getKindeServerSession } from "@kinde-oss/kinde-auth-nextjs/server"
 
 import { Footer } from "@/components/footer"
 import { Header } from "@/components/header"
 
-export default async function LobbyLayout({
-    children,
-}: {
-    children: ReactNode
-}) {
-    const user = await currentUser()
+export default function LobbyLayout({ children }: { children: ReactNode }) {
+    const { getUser } = getKindeServerSession()
+    const user = getUser()
+
     return (
         <>
             <Header user={user} />
