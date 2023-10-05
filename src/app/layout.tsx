@@ -9,6 +9,8 @@ import { Toaster } from "@/components/ui/toaster"
 import { QueryProvider } from "@/components/query-provider"
 import { ThemeProvider } from "@/components/theme-provider"
 
+import Provider from "./_trpc/provider"
+
 const inter = Inter({ subsets: ["latin"] })
 
 export const metadata: Metadata = {
@@ -26,10 +28,10 @@ export default function RootLayout({
             <head />
             <body className={cn(inter.className, "flex min-h-screen flex-col")}>
                 <ThemeProvider attribute="class">
-                    <QueryProvider>
+                    <Provider>
                         {children}
                         <Toaster />
-                    </QueryProvider>
+                    </Provider>
                 </ThemeProvider>
             </body>
         </html>
