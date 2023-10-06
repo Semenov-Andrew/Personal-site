@@ -1,5 +1,7 @@
 import { type FC } from "react"
 import Image from "next/image"
+import Link from "next/link"
+import { KindePermission } from "@kinde-oss/kinde-auth-nextjs"
 import {
     LoginLink,
     LogoutLink,
@@ -23,9 +25,10 @@ import { Button } from "./ui/button"
 
 interface HeaderProps {
     user: KindeUser
+    dashboardAccess: KindePermission
 }
 
-export const Header: FC<HeaderProps> = ({ user }) => {
+export const Header: FC<HeaderProps> = ({ user, dashboardAccess }) => {
     return (
         <header className="container sticky top-0 z-10 mx-auto flex  items-center justify-between bg-background/50 py-4 backdrop-blur-sm">
             <MainNav />
@@ -56,6 +59,16 @@ export const Header: FC<HeaderProps> = ({ user }) => {
                         <DropdownMenuContent>
                             <DropdownMenuLabel>My Account</DropdownMenuLabel>
                             <DropdownMenuSeparator />
+                            {dashboardAccess.isGranted ? (
+                                <>
+                                    <Link href={"/dashboard"}>
+                                        <DropdownMenuItem>
+                                            Dashboard
+                                        </DropdownMenuItem>
+                                    </Link>
+                                    <DropdownMenuSeparator />
+                                </>
+                            ) : null}
                             <LogoutLink>
                                 <DropdownMenuItem>Sign Out</DropdownMenuItem>
                             </LogoutLink>
