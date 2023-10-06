@@ -11,12 +11,39 @@ datasource db {
   relationMode = "prisma"
 }
 
-model Meme{
-  id String @id @default(cuid())
-  imageSrc String
-  title String?
-  likesCount Int @default(0)
-  commentsCount Int @default(0)
-  viewsCount Int @default(0)
+model Meme {
+  id            String        @id @default(cuid())
+  imageSrc      String
+  title         String?
+  likesCount    Int           @default(0)
+  commentsCount Int           @default(0)
+  viewsCount    Int           @default(0)
+  createdAt     DateTime      @default(now())
+  likes         MemeLike[]
+  comments      MemeComment[]
+
+  @@map("memes")
+}
+
+model MemeLike {
+  userId  String
+  memeId  String
+  likedAt DateTime @default(now())
+
+  meme Meme @relation(fields: [memeId], references: [id])
+
+  @@id([userId, memeId])
+  @@index([memeId])
+}
+
+model MemeComment {
+  userId    String
+  memeId    String
   createdAt DateTime @default(now())
+  text      String
+
+  meme Meme @relation(fields: [memeId], references: [id])
+
+  @@id([userId, memeId])
+  @@index([memeId])
 }

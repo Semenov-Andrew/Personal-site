@@ -1,8 +1,10 @@
 import { type FC } from "react"
 import Image from "next/image"
-import Link from "next/link"
-import { SignInButton, SignOutButton } from "@clerk/nextjs"
-import { type User } from "@clerk/nextjs/api"
+import {
+    LoginLink,
+    LogoutLink,
+    type KindeUser,
+} from "@kinde-oss/kinde-auth-nextjs/server"
 import { ChevronDownIcon } from "@radix-ui/react-icons"
 
 import {
@@ -20,7 +22,7 @@ import { ThemeToggle } from "./theme-toggle"
 import { Button } from "./ui/button"
 
 interface HeaderProps {
-    user: User | null
+    user: KindeUser
 }
 
 export const Header: FC<HeaderProps> = ({ user }) => {
@@ -35,14 +37,14 @@ export const Header: FC<HeaderProps> = ({ user }) => {
                         <DropdownMenuTrigger asChild>
                             <Button
                                 variant={"ghost"}
-                                className="space-x-1"
+                                className="space-x-2"
                                 size={"sm"}
                             >
                                 <span className="hidden md:block">
-                                    {user.firstName}&nbsp;{user.lastName}
+                                    {user.given_name}
                                 </span>
                                 <Image
-                                    src={user?.imageUrl}
+                                    src={user.picture || ""}
                                     height={32}
                                     width={32}
                                     alt="profile pic"
@@ -53,27 +55,16 @@ export const Header: FC<HeaderProps> = ({ user }) => {
                         </DropdownMenuTrigger>
                         <DropdownMenuContent>
                             <DropdownMenuLabel>My Account</DropdownMenuLabel>
-                            {user.publicMetadata.role === "admin" ? (
-                                <>
-                                    <DropdownMenuSeparator />
-
-                                    <Link href={"/dashboard"}>
-                                        <DropdownMenuItem>
-                                            Dashboard
-                                        </DropdownMenuItem>
-                                    </Link>
-                                </>
-                            ) : null}
                             <DropdownMenuSeparator />
-                            <SignOutButton>
+                            <LogoutLink>
                                 <DropdownMenuItem>Sign Out</DropdownMenuItem>
-                            </SignOutButton>
+                            </LogoutLink>
                         </DropdownMenuContent>
                     </DropdownMenu>
                 ) : (
-                    <SignInButton>
+                    <LoginLink>
                         <Button size={"sm"}>Sign In</Button>
-                    </SignInButton>
+                    </LoginLink>
                 )}
             </div>
         </header>

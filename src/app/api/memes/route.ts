@@ -1,13 +1,13 @@
-import { revalidateTag } from "next/cache"
 import { NextResponse, type NextRequest } from "next/server"
-import { currentUser } from "@clerk/nextjs"
+import { getKindeServerSession } from "@kinde-oss/kinde-auth-nextjs/server"
 import { type Meme } from "@prisma/client"
 
 import { prisma } from "@/lib/db"
+import { PERMISSIONS } from "@/lib/permissions"
 
 export const POST = async (req: NextRequest) => {
-    const user = await currentUser()
-    if (user?.publicMetadata.role !== "admin")
+    const { getPermission } = getKindeServerSession()
+    if (!getPermission(PERMISSIONS.dashboardAccess).isGranted)
         return new Response(null, {
             status: 403,
             statusText: "Only admin accessible",
@@ -33,7 +33,7 @@ export const POST = async (req: NextRequest) => {
     }
 }
 
-export const GET = async (request: NextRequest) => {
+export const GET = async () => {
     try {
         const memes = await prisma.meme.findMany({
             orderBy: {

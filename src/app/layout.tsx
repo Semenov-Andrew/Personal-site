@@ -3,12 +3,12 @@ import "@/styles/mdx.css"
 
 import type { Metadata } from "next"
 import { Inter } from "next/font/google"
-import { ClerkProvider } from "@clerk/nextjs"
 
 import { cn } from "@/lib/utils"
 import { Toaster } from "@/components/ui/toaster"
-import { QueryProvider } from "@/components/query-provider"
 import { ThemeProvider } from "@/components/theme-provider"
+
+import Provider from "./_trpc/provider"
 
 const inter = Inter({ subsets: ["latin"] })
 
@@ -23,23 +23,16 @@ export default function RootLayout({
     children: React.ReactNode
 }) {
     return (
-        <ClerkProvider>
-            <html lang="en" suppressHydrationWarning>
-                <head />
-                <body
-                    className={cn(
-                        inter.className,
-                        "flex min-h-screen flex-col"
-                    )}
-                >
-                    <ThemeProvider attribute="class">
-                        <QueryProvider>
-                            {children}
-                            <Toaster />
-                        </QueryProvider>
-                    </ThemeProvider>
-                </body>
-            </html>
-        </ClerkProvider>
+        <html lang="en" suppressHydrationWarning>
+            <head />
+            <body className={cn(inter.className, "flex min-h-screen flex-col")}>
+                <ThemeProvider attribute="class">
+                    <Provider>
+                        {children}
+                        <Toaster />
+                    </Provider>
+                </ThemeProvider>
+            </body>
+        </html>
     )
 }
