@@ -1,11 +1,8 @@
-import { prisma } from "@/lib/db"
+import { memesRouter } from "./routers/memes"
+import { createTRPCRouter } from "./trpc"
 
-import { publicProcedure, router } from "./trpc"
-
-export const appRouter = router({
-    getTodos: publicProcedure.query(async () => {
-        return await prisma.meme.findMany()
-    }),
+export const appRouter = createTRPCRouter({
+    memes: memesRouter,
 })
 
 export type AppRouter = typeof appRouter

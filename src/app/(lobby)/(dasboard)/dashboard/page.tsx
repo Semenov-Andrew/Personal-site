@@ -2,21 +2,15 @@
 
 import { useState } from "react"
 import Image from "next/image"
-import { $api } from "@/http/api"
-import { type Meme } from "@prisma/client"
-import { useMutation } from "@tanstack/react-query"
 
 import { UploadDropzone } from "@/lib/uploadthing"
 import { buttonVariants } from "@/components/ui/button"
 import { Spinner } from "@/components/ui/spinner"
 import { useToast } from "@/components/ui/use-toast"
+import { trpc } from "@/app/_trpc/client"
 
 const DashboardPage = () => {
-    const mutation = useMutation({
-        mutationFn: ({ url, title }: { url: string; title?: string }) => {
-            return $api.post<Meme>("memes", { imageSrc: url, title })
-        },
-    })
+    const mutation = trpc.memes.createMeme.useMutation()
     const [uploadedImgSrc, setUploadedImgSrc] = useState("")
     const { toast } = useToast()
 
@@ -49,7 +43,7 @@ const DashboardPage = () => {
                                 .join(", ")}`,
                         })
                         if (res) {
-                            mutation.mutate({ url: res[0].url })
+                            mutation.mutate({ imageSrc: res[0].url })
                             setUploadedImgSrc(res[0].url)
                         }
                     }}

@@ -1,8 +1,7 @@
 import { type FC } from "react"
 import Image from "next/image"
-import { EyeIcon } from "@heroicons/react/20/solid"
 import { ChatBubbleOvalLeftIcon, HeartIcon } from "@heroicons/react/24/outline"
-import { Meme } from "@prisma/client"
+import { type Meme } from "@prisma/client"
 import dayjs from "dayjs"
 import relativeTime from "dayjs/plugin/relativeTime"
 

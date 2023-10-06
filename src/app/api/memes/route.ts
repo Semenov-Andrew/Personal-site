@@ -3,11 +3,11 @@ import { getKindeServerSession } from "@kinde-oss/kinde-auth-nextjs/server"
 import { type Meme } from "@prisma/client"
 
 import { prisma } from "@/lib/db"
-import { Permissions } from "@/lib/permissions"
+import { PERMISSIONS } from "@/lib/permissions"
 
 export const POST = async (req: NextRequest) => {
     const { getPermission } = getKindeServerSession()
-    if (!getPermission(Permissions.dashboardAccess).isGranted)
+    if (!getPermission(PERMISSIONS.dashboardAccess).isGranted)
         return new Response(null, {
             status: 403,
             statusText: "Only admin accessible",

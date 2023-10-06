@@ -1,3 +1,3 @@
-export enum Permissions {
+export enum PERMISSIONS {
     dashboardAccess = "dashboard::access",
 }

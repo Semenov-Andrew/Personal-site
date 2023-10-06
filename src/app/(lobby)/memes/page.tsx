@@ -1,18 +1,8 @@
-import { Meme } from "@prisma/client"
-
 import { MemeCard } from "@/components/meme-card"
-
-const getMemes = async () => {
-    const res = await fetch(`http://localhost:3000/api/memes`, {
-        next: {
-            revalidate: process.env.NODE_ENV === "production" ? 3600 : 1,
-        },
-    })
-    return res.json()
-}
+import { serverClient } from "@/app/_trpc/server-client"
 
 const MemesPage = async () => {
-    const memes: Meme[] = await getMemes()
+    const memes = await serverClient.memes.getAll()
     return (
         <div className="mx-auto flex w-full max-w-2xl flex-col space-y-8">
             {memes.map((meme) => (

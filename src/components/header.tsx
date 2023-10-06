@@ -1,9 +1,9 @@
 import { type FC } from "react"
 import Image from "next/image"
 import {
-    KindeUser,
     LoginLink,
     LogoutLink,
+    type KindeUser,
 } from "@kinde-oss/kinde-auth-nextjs/server"
 import { ChevronDownIcon } from "@radix-ui/react-icons"
 
