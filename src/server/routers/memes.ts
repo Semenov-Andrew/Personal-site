@@ -8,7 +8,7 @@ import { PERMISSIONS } from "@/lib/permissions"
 import { createTRPCRouter, privateProcedure, publicProcedure } from "../trpc"
 
 export const memesRouter = createTRPCRouter({
-    getAll: publicProcedure.query(async () => {
+    getAll: publicProcedure.query(async ({ ctx }) => {
         try {
             const memes = await prisma.meme.findMany({
                 orderBy: {
@@ -24,14 +24,14 @@ export const memesRouter = createTRPCRouter({
             })
         }
     }),
-    createMeme: privateProcedure
+    create: privateProcedure
         .input(
             z.object({
                 imageSrc: z.string().min(1),
                 title: z.string().optional(),
             })
         )
-        .mutation(async ({ input }) => {
+        .mutation(async ({ ctx, input }) => {
             const { getPermission } = getKindeServerSession()
             if (!getPermission(PERMISSIONS.dashboardAccess).isGranted)
                 throw new TRPCError({
@@ -56,4 +56,49 @@ export const memesRouter = createTRPCRouter({
                 })
             }
         }),
+    // toggleLike: privateProcedure
+    //     .input(
+    //         z.object({
+    //             memeId: z.string().min(1),
+    //         })
+    //     )
+    //     .mutation(async ({ ctx, input }) => {
+    //         const { userId } = ctx
+    //         const { memeId } = input
+    //         try {
+    //             const existingLike = await prisma.memeLike.findUnique({
+    //                 where: {
+    //                     userId_memeId: {
+    //                         userId,
+    //                         memeId,
+    //                     },
+    //                 },
+    //             })
+    //             if (existingLike) {
+    //                 await prisma.memeLike.delete({
+    //                     where: {
+    //                         userId_memeId: {
+    //                             memeId,
+    //                             userId,
+    //                         },
+    //                     },
+    //                 })
+    //                 return { status: "success", message: "like removed" }
+    //             } else {
+    //                 await prisma.memeLike.create({
+    //                     data: {
+    //                         userId,
+    //                         memeId,
+    //                     },
+    //                 })
+    //                 return { status: "success", message: "like added" }
+    //             }
+    //         } catch (e) {
+    //             console.error(e)
+    //             throw new TRPCError({
+    //                 code: "INTERNAL_SERVER_ERROR",
+    //                 message: "An error occurred while toggling like",
+    //             })
+    //         }
+    //     }),
 })

@@ -1,9 +1,13 @@
-import { type FC } from "react"
+"use client"
+
+import { useState, type FC } from "react"
 import Image from "next/image"
 import { ChatBubbleOvalLeftIcon, HeartIcon } from "@heroicons/react/24/outline"
 import { type Meme } from "@prisma/client"
 import dayjs from "dayjs"
 import relativeTime from "dayjs/plugin/relativeTime"
+
+import { trpc } from "@/app/_trpc/client"
 
 import { Button } from "./ui/button"
 
@@ -15,6 +19,7 @@ interface MemeCardProps {
 }
 
 export const MemeCard: FC<MemeCardProps> = ({ meme }) => {
+    const [likesCount, setLikesCount] = useState(meme.likesCount)
     return (
         <div className="ml-[calc(50%-50vw)] flex w-screen flex-col overflow-hidden sm:ml-0 sm:w-full ">
             <div className="flex flex-1 items-center justify-center bg-muted sm:rounded-lg lg:px-4 lg:py-2">
@@ -41,7 +46,7 @@ export const MemeCard: FC<MemeCardProps> = ({ meme }) => {
                         variant={"secondary"}
                     >
                         <HeartIcon className="h-6 w-6" />
-                        <span>{meme.likesCount}</span>
+                        <span>{likesCount}</span>
                     </Button>
                     <Button
                         className="flex items-center space-x-2 rounded-full"

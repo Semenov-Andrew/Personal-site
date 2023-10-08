@@ -1,9 +1,23 @@
 import { getKindeServerSession } from "@kinde-oss/kinde-auth-nextjs/server"
 import { initTRPC, TRPCError } from "@trpc/server"
+import superjson from "superjson"
+import { ZodError } from "zod"
 
-// import { FetchCreateContextFnOptions } from "@trpc/server/adapters/fetch"
-
-const t = initTRPC.create()
+const t = initTRPC.create({
+    transformer: superjson,
+    errorFormatter({ shape, error }) {
+        return {
+            ...shape,
+            data: {
+                ...shape.data,
+                zodError:
+                    error.cause instanceof ZodError
+                        ? error.cause.flatten()
+                        : null,
+            },
+        }
+    },
+})
 const middleware = t.middleware
 
 const isAuth = middleware(async (opts) => {
@@ -20,11 +34,6 @@ const isAuth = middleware(async (opts) => {
         },
     })
 })
-
-// export const createTRPCContext = ({
-//     req,
-//     resHeaders,
-// }: FetchCreateContextFnOptions) => {}
 
 export const publicProcedure = t.procedure
 export const privateProcedure = t.procedure.use(isAuth)

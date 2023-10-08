@@ -10,7 +10,7 @@ import { useToast } from "@/components/ui/use-toast"
 import { trpc } from "@/app/_trpc/client"
 
 const DashboardPage = () => {
-    const mutation = trpc.memes.createMeme.useMutation()
+    const mutation = trpc.memes.create.useMutation()
     const [uploadedImgSrc, setUploadedImgSrc] = useState("")
     const { toast } = useToast()
 
