@@ -130,7 +130,7 @@ export const memesRouter = createTRPCRouter({
             }
         }),
     isMemeLiked: privateProcedure
-        .input(z.object({ memeId: z.string() }))
+        .input(z.object({ memeId: z.string().min(1) }))
         .query(async ({ ctx, input }) => {
             const { userId } = ctx
             const { memeId } = input
@@ -149,6 +149,30 @@ export const memesRouter = createTRPCRouter({
                 throw new TRPCError({
                     code: "INTERNAL_SERVER_ERROR",
                     message: "An error occurred while getting like status",
+                })
+            }
+        }),
+    getMemeLikesCount: publicProcedure
+        .input(z.object({ memeId: z.string().min(1) }))
+        .query(async ({ input }) => {
+            const { memeId } = input
+            try {
+                const meme = await prisma.meme.findUnique({
+                    where: {
+                        id: memeId,
+                    },
+                })
+                if (!meme)
+                    throw new TRPCError({
+                        code: "NOT_FOUND",
+                        message: "meme not found",
+                    })
+                return meme.likesCount
+            } catch (e) {
+                console.error(e)
+                throw new TRPCError({
+                    code: "INTERNAL_SERVER_ERROR",
+                    message: "An error occurred while getting likes count",
                 })
             }
         }),

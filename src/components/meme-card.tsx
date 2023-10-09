@@ -22,25 +22,44 @@ interface MemeCardProps {
 }
 
 export const MemeCard: FC<MemeCardProps> = ({ meme }) => {
-    const utils = trpc.useContext()
     const { data: isLiked } = trpc.memes.isMemeLiked.useQuery({
         memeId: meme.id,
     })
+    const { data: likesCount } = trpc.memes.getMemeLikesCount.useQuery(
+        { memeId: meme.id },
+        { initialData: meme.likesCount }
+    )
+    const utils = trpc.useContext()
     const { mutate: toggleLike } = trpc.memes.toggleLike.useMutation({
         onMutate: async () => {
-            await utils.memes.getAll.cancel()
-            const prevIsMemeLiked = utils.memes.isMemeLiked.getData()
+            await utils.memes.isMemeLiked.cancel()
+            await utils.memes.getMemeLikesCount.cancel()
+            const prevLikesCount = utils.memes.getMemeLikesCount.getData()
+            const prevIsLiked = utils.memes.isMemeLiked.getData()
+            utils.memes.getMemeLikesCount.setData(
+                { memeId: meme.id },
+                (oldQueryData: number | undefined) =>
+                    (oldQueryData ?? 0) + (isLiked ? -1 : 1)
+            )
             utils.memes.isMemeLiked.setData(
                 { memeId: meme.id },
                 (oldQueryData: boolean | undefined) => !oldQueryData
             )
-            return prevIsMemeLiked
+            return { isLiked: prevIsLiked, likesCount: prevLikesCount }
         },
         onError: (_, __, ctx) => {
-            utils.memes.isMemeLiked.setData({ memeId: meme.id }, ctx ?? false)
+            utils.memes.isMemeLiked.setData(
+                { memeId: meme.id },
+                ctx?.isLiked ?? false
+            )
+            utils.memes.getMemeLikesCount.setData(
+                { memeId: meme.id },
+                ctx?.likesCount ?? 0
+            )
         },
         onSettled: () => {
             void utils.memes.isMemeLiked.invalidate()
+            void utils.memes.getMemeLikesCount.invalidate()
         },
     })
     return (
@@ -70,7 +89,7 @@ export const MemeCard: FC<MemeCardProps> = ({ meme }) => {
                         onClick={() => toggleLike({ memeId: meme.id })}
                     >
                         <HeartIcon className="h-6 w-6" />
-                        <span>{meme.likesCount}</span>
+                        <span>{likesCount}</span>
                     </Button>
                     <Button
                         className="flex items-center space-x-2 rounded-full"
