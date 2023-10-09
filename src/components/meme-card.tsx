@@ -1,9 +1,12 @@
 "use client"
 
-import { useState, type FC } from "react"
+import { useEffect, useState, type FC } from "react"
 import Image from "next/image"
+import { RouterOutputs } from "@/server/trpc"
 import { ChatBubbleOvalLeftIcon, HeartIcon } from "@heroicons/react/24/outline"
 import { type Meme } from "@prisma/client"
+import { QueryClient, useQueryClient } from "@tanstack/react-query"
+import { getQueryKey } from "@trpc/react-query"
 import dayjs from "dayjs"
 import relativeTime from "dayjs/plugin/relativeTime"
 
@@ -19,7 +22,27 @@ interface MemeCardProps {
 }
 
 export const MemeCard: FC<MemeCardProps> = ({ meme }) => {
-    const [likesCount, setLikesCount] = useState(meme.likesCount)
+    const utils = trpc.useContext()
+    const { data: isLiked } = trpc.memes.isMemeLiked.useQuery({
+        memeId: meme.id,
+    })
+    const { mutate: toggleLike } = trpc.memes.toggleLike.useMutation({
+        onMutate: async () => {
+            await utils.memes.getAll.cancel()
+            const prevIsMemeLiked = utils.memes.isMemeLiked.getData()
+            utils.memes.isMemeLiked.setData(
+                { memeId: meme.id },
+                (oldQueryData: boolean | undefined) => !oldQueryData
+            )
+            return prevIsMemeLiked
+        },
+        onError: (_, __, ctx) => {
+            utils.memes.isMemeLiked.setData({ memeId: meme.id }, ctx ?? false)
+        },
+        onSettled: () => {
+            void utils.memes.isMemeLiked.invalidate()
+        },
+    })
     return (
         <div className="ml-[calc(50%-50vw)] flex w-screen flex-col overflow-hidden sm:ml-0 sm:w-full ">
             <div className="flex flex-1 items-center justify-center bg-muted sm:rounded-lg lg:px-4 lg:py-2">
@@ -43,10 +66,11 @@ export const MemeCard: FC<MemeCardProps> = ({ meme }) => {
                     <Button
                         className="flex items-center space-x-2 rounded-full"
                         size={"sm"}
-                        variant={"secondary"}
+                        variant={isLiked ? "default" : "secondary"}
+                        onClick={() => toggleLike({ memeId: meme.id })}
                     >
                         <HeartIcon className="h-6 w-6" />
-                        <span>{likesCount}</span>
+                        <span>{meme.likesCount}</span>
                     </Button>
                     <Button
                         className="flex items-center space-x-2 rounded-full"

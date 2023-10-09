@@ -56,49 +56,100 @@ export const memesRouter = createTRPCRouter({
                 })
             }
         }),
-    // toggleLike: privateProcedure
-    //     .input(
-    //         z.object({
-    //             memeId: z.string().min(1),
-    //         })
-    //     )
-    //     .mutation(async ({ ctx, input }) => {
-    //         const { userId } = ctx
-    //         const { memeId } = input
-    //         try {
-    //             const existingLike = await prisma.memeLike.findUnique({
-    //                 where: {
-    //                     userId_memeId: {
-    //                         userId,
-    //                         memeId,
-    //                     },
-    //                 },
-    //             })
-    //             if (existingLike) {
-    //                 await prisma.memeLike.delete({
-    //                     where: {
-    //                         userId_memeId: {
-    //                             memeId,
-    //                             userId,
-    //                         },
-    //                     },
-    //                 })
-    //                 return { status: "success", message: "like removed" }
-    //             } else {
-    //                 await prisma.memeLike.create({
-    //                     data: {
-    //                         userId,
-    //                         memeId,
-    //                     },
-    //                 })
-    //                 return { status: "success", message: "like added" }
-    //             }
-    //         } catch (e) {
-    //             console.error(e)
-    //             throw new TRPCError({
-    //                 code: "INTERNAL_SERVER_ERROR",
-    //                 message: "An error occurred while toggling like",
-    //             })
-    //         }
-    //     }),
+    toggleLike: privateProcedure
+        .input(
+            z.object({
+                memeId: z.string().min(1),
+            })
+        )
+        .mutation(async ({ ctx, input }) => {
+            const { userId } = ctx
+            const { memeId } = input
+            try {
+                const existingLike = await prisma.memeLike.findUnique({
+                    where: {
+                        userId_memeId: {
+                            userId,
+                            memeId,
+                        },
+                    },
+                })
+                if (existingLike) {
+                    await prisma.memeLike.delete({
+                        where: {
+                            userId_memeId: {
+                                memeId,
+                                userId,
+                            },
+                        },
+                    })
+                    const meme = await prisma.meme.update({
+                        where: {
+                            id: memeId,
+                        },
+                        data: {
+                            likesCount: {
+                                decrement: 1,
+                            },
+                        },
+                    })
+                    return {
+                        status: "success",
+                        message: "like removed",
+                        likesCount: meme.likesCount,
+                    }
+                } else {
+                    await prisma.memeLike.create({
+                        data: {
+                            userId,
+                            memeId,
+                        },
+                    })
+                    const meme = await prisma.meme.update({
+                        where: {
+                            id: memeId,
+                        },
+                        data: {
+                            likesCount: {
+                                increment: 1,
+                            },
+                        },
+                    })
+                    return {
+                        status: "success",
+                        message: "like added",
+                        likesCount: meme.likesCount,
+                    }
+                }
+            } catch (e) {
+                console.error(e)
+                throw new TRPCError({
+                    code: "INTERNAL_SERVER_ERROR",
+                    message: "An error occurred while toggling like",
+                })
+            }
+        }),
+    isMemeLiked: privateProcedure
+        .input(z.object({ memeId: z.string() }))
+        .query(async ({ ctx, input }) => {
+            const { userId } = ctx
+            const { memeId } = input
+            try {
+                const like = await prisma.memeLike.findUnique({
+                    where: {
+                        userId_memeId: {
+                            userId,
+                            memeId,
+                        },
+                    },
+                })
+                return !!like
+            } catch (e) {
+                console.error(e)
+                throw new TRPCError({
+                    code: "INTERNAL_SERVER_ERROR",
+                    message: "An error occurred while getting like status",
+                })
+            }
+        }),
 })

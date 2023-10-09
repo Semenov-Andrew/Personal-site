@@ -1,7 +1,14 @@
 import { getKindeServerSession } from "@kinde-oss/kinde-auth-nextjs/server"
-import { initTRPC, TRPCError } from "@trpc/server"
+import {
+    inferRouterInputs,
+    inferRouterOutputs,
+    initTRPC,
+    TRPCError,
+} from "@trpc/server"
 import superjson from "superjson"
 import { ZodError } from "zod"
+
+import { AppRouter } from "."
 
 const t = initTRPC.create({
     transformer: superjson,
@@ -38,3 +45,7 @@ const isAuth = middleware(async (opts) => {
 export const publicProcedure = t.procedure
 export const privateProcedure = t.procedure.use(isAuth)
 export const createTRPCRouter = t.router
+
+export type RouterInputs = inferRouterInputs<AppRouter>
+
+export type RouterOutputs = inferRouterOutputs<AppRouter>
