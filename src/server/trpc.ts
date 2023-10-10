@@ -1,14 +1,14 @@
 import { getKindeServerSession } from "@kinde-oss/kinde-auth-nextjs/server"
 import {
-    inferRouterInputs,
-    inferRouterOutputs,
     initTRPC,
     TRPCError,
+    type inferRouterInputs,
+    type inferRouterOutputs,
 } from "@trpc/server"
 import superjson from "superjson"
 import { ZodError } from "zod"
 
-import { AppRouter } from "."
+import { type AppRouter } from "."
 
 const t = initTRPC.create({
     transformer: superjson,

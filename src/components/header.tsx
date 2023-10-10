@@ -1,7 +1,7 @@
 import { type FC } from "react"
 import Image from "next/image"
 import Link from "next/link"
-import { KindePermission } from "@kinde-oss/kinde-auth-nextjs"
+import { type KindePermission } from "@kinde-oss/kinde-auth-nextjs"
 import {
     LoginLink,
     LogoutLink,

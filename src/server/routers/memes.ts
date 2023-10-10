@@ -8,7 +8,7 @@ import { PERMISSIONS } from "@/lib/permissions"
 import { createTRPCRouter, privateProcedure, publicProcedure } from "../trpc"
 
 export const memesRouter = createTRPCRouter({
-    getAll: publicProcedure.query(async ({ ctx }) => {
+    getAll: publicProcedure.query(async () => {
         try {
             const memes = await prisma.meme.findMany({
                 orderBy: {
@@ -31,7 +31,7 @@ export const memesRouter = createTRPCRouter({
                 title: z.string().optional(),
             })
         )
-        .mutation(async ({ ctx, input }) => {
+        .mutation(async ({ input }) => {
             const { getPermission } = getKindeServerSession()
             if (!getPermission(PERMISSIONS.dashboardAccess).isGranted)
                 throw new TRPCError({
