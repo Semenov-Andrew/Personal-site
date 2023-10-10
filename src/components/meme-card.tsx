@@ -1,12 +1,9 @@
 "use client"
 
-import { useEffect, useState, type FC } from "react"
+import { type FC } from "react"
 import Image from "next/image"
-import { RouterOutputs } from "@/server/trpc"
 import { ChatBubbleOvalLeftIcon, HeartIcon } from "@heroicons/react/24/outline"
 import { type Meme } from "@prisma/client"
-import { QueryClient, useQueryClient } from "@tanstack/react-query"
-import { getQueryKey } from "@trpc/react-query"
 import dayjs from "dayjs"
 import relativeTime from "dayjs/plugin/relativeTime"
 
@@ -31,6 +28,7 @@ export const MemeCard: FC<MemeCardProps> = ({ meme }) => {
     )
     const utils = trpc.useContext()
     const { mutate: toggleLike } = trpc.memes.toggleLike.useMutation({
+        // optimistic likesCount & isLiked update
         onMutate: async () => {
             await utils.memes.isMemeLiked.cancel()
             await utils.memes.getMemeLikesCount.cancel()
