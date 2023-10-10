@@ -30,10 +30,14 @@ export const MemeCard: FC<MemeCardProps> = ({ meme }) => {
     const { mutate: toggleLike } = trpc.memes.toggleLike.useMutation({
         // optimistic likesCount & isLiked update
         onMutate: async () => {
-            await utils.memes.isMemeLiked.cancel()
-            await utils.memes.getMemeLikesCount.cancel()
-            const prevLikesCount = utils.memes.getMemeLikesCount.getData()
-            const prevIsLiked = utils.memes.isMemeLiked.getData()
+            await utils.memes.isMemeLiked.cancel({ memeId: meme.id })
+            await utils.memes.getMemeLikesCount.cancel({ memeId: meme.id })
+            const prevLikesCount = utils.memes.getMemeLikesCount.getData({
+                memeId: meme.id,
+            })
+            const prevIsLiked = utils.memes.isMemeLiked.getData({
+                memeId: meme.id,
+            })
             utils.memes.getMemeLikesCount.setData(
                 { memeId: meme.id },
                 (oldQueryData: number | undefined) =>
@@ -56,8 +60,8 @@ export const MemeCard: FC<MemeCardProps> = ({ meme }) => {
             )
         },
         onSettled: () => {
-            void utils.memes.isMemeLiked.invalidate()
-            void utils.memes.getMemeLikesCount.invalidate()
+            void utils.memes.isMemeLiked.invalidate({ memeId: meme.id })
+            void utils.memes.getMemeLikesCount.invalidate({ memeId: meme.id })
         },
     })
     return (
