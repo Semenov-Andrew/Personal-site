@@ -59,10 +59,6 @@ export const MemeCard: FC<MemeCardProps> = ({ meme }) => {
                 ctx?.likesCount ?? 0
             )
         },
-        onSettled: () => {
-            void utils.memes.isMemeLiked.invalidate({ memeId: meme.id })
-            void utils.memes.getMemeLikesCount.invalidate({ memeId: meme.id })
-        },
     })
     return (
         <div className="ml-[calc(50%-50vw)] flex w-screen flex-col overflow-hidden sm:ml-0 sm:w-full ">

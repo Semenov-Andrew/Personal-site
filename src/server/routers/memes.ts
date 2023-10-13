@@ -65,62 +65,85 @@ export const memesRouter = createTRPCRouter({
         .mutation(async ({ ctx, input }) => {
             const { userId } = ctx
             const { memeId } = input
+
             try {
-                const existingLike = await prisma.memeLike.findUnique({
-                    where: {
-                        userId_memeId: {
-                            userId,
-                            memeId,
-                        },
+                return await prisma.$transaction(
+                    async (tx) => {
+                        // Check if the user has already liked the meme
+                        const existingLike = await tx.memeLike.findUnique({
+                            where: {
+                                userId_memeId: {
+                                    userId,
+                                    memeId,
+                                },
+                            },
+                        })
+
+                        if (existingLike) {
+                            // If the user already liked the meme, remove the like
+                            const memeLike = await tx.memeLike.delete({
+                                where: {
+                                    userId_memeId: {
+                                        memeId,
+                                        userId,
+                                    },
+                                },
+                            })
+
+                            // Update the likesCount for the meme (decrement)
+                            if (memeLike) {
+                                const meme = await tx.meme.update({
+                                    where: {
+                                        id: memeId,
+                                    },
+                                    data: {
+                                        likesCount: {
+                                            decrement: 1,
+                                        },
+                                    },
+                                })
+
+                                return {
+                                    status: "success",
+                                    message: "like removed",
+                                    likesCount: meme.likesCount,
+                                }
+                            } else {
+                                throw new TRPCError({
+                                    code: "INTERNAL_SERVER_ERROR",
+                                    message: "unable to remove like",
+                                })
+                            }
+                        } else {
+                            // If the user hasn't liked the meme, add a new like
+                            await tx.memeLike.create({
+                                data: {
+                                    userId,
+                                    memeId,
+                                },
+                            })
+
+                            // Update the likesCount for the meme (increment)
+                            const meme = await tx.meme.update({
+                                where: {
+                                    id: memeId,
+                                },
+                                data: {
+                                    likesCount: {
+                                        increment: 1,
+                                    },
+                                },
+                            })
+
+                            return {
+                                status: "success",
+                                message: "like added",
+                                likesCount: meme.likesCount,
+                            }
+                        }
                     },
-                })
-                if (existingLike) {
-                    await prisma.memeLike.delete({
-                        where: {
-                            userId_memeId: {
-                                memeId,
-                                userId,
-                            },
-                        },
-                    })
-                    const meme = await prisma.meme.update({
-                        where: {
-                            id: memeId,
-                        },
-                        data: {
-                            likesCount: {
-                                decrement: 1,
-                            },
-                        },
-                    })
-                    return {
-                        status: "success",
-                        message: "like removed",
-                        likesCount: meme.likesCount,
-                    }
-                } else {
-                    await prisma.memeLike.create({
-                        data: {
-                            userId,
-                            memeId,
-                        },
-                    })
-                    const meme = await prisma.meme.update({
-                        where: {
-                            id: memeId,
-                        },
-                        data: {
-                            likesCount: {
-                                increment: 1,
-                            },
-                        },
-                    })
-                    return {
-                        status: "success",
-                        message: "like added",
-                        likesCount: meme.likesCount,
-                    }
-                }
+                    { isolationLevel: "Serializable" }
+                )
             } catch (e) {
                 console.error(e)
                 throw new TRPCError({
@@ -129,6 +152,7 @@ export const memesRouter = createTRPCRouter({
                 })
             }
         }),
+
     isMemeLiked: privateProcedure
         .input(z.object({ memeId: z.string().min(1) }))
         .query(async ({ ctx, input }) => {
