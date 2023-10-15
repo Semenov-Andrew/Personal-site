@@ -11,6 +11,13 @@ datasource db {
   relationMode = "prisma"
 }
 
+model User {
+  id         String     @id @unique // mathes kinde user id
+  email      String     @unique
+  memesLikes MemeLike[]
+  memesComments MemeComment[]
+}
+
 model Meme {
   id            String        @id @default(cuid())
   imageSrc      String
@@ -31,9 +38,11 @@ model MemeLike {
   likedAt DateTime @default(now())
 
   meme Meme @relation(fields: [memeId], references: [id])
+  user User @relation(fields: [userId], references: [id])
 
   @@id([userId, memeId])
   @@index([memeId])
+  @@index([userId])
 }
 
 model MemeComment {
@@ -43,7 +52,9 @@ model MemeComment {
   text      String
 
   meme Meme @relation(fields: [memeId], references: [id])
+  user User @relation(fields: [userId], references: [id])
 
   @@id([userId, memeId])
   @@index([memeId])
+  @@index([userId])
 }

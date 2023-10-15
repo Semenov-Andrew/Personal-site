@@ -3,13 +3,25 @@
 import { type FC } from "react"
 import Image from "next/image"
 import { ChatBubbleOvalLeftIcon, HeartIcon } from "@heroicons/react/24/outline"
+import { LoginLink, RegisterLink } from "@kinde-oss/kinde-auth-nextjs/server"
 import { type Meme } from "@prisma/client"
 import dayjs from "dayjs"
 import relativeTime from "dayjs/plugin/relativeTime"
 
+import { cn } from "@/lib/utils"
+import {
+    Dialog,
+    DialogContent,
+    DialogDescription,
+    DialogHeader,
+    DialogTitle,
+    DialogTrigger,
+} from "@/components/ui/dialog"
 import { trpc } from "@/app/_trpc/client"
 
-import { Button } from "./ui/button"
+import { Header } from "./header"
+import { LoginButton } from "./login-button"
+import { Button, buttonVariants } from "./ui/button"
 
 dayjs.extend(relativeTime)
 dayjs.locale("ru")
@@ -19,9 +31,13 @@ interface MemeCardProps {
 }
 
 export const MemeCard: FC<MemeCardProps> = ({ meme }) => {
-    const { data: isLiked } = trpc.memes.isMemeLiked.useQuery({
-        memeId: meme.id,
-    })
+    const { data: session } = trpc.auth.getKindeSession.useQuery()
+    const { data: isLiked } = trpc.memes.isMemeLiked.useQuery(
+        {
+            memeId: meme.id,
+        },
+        { enabled: session?.isAuthenticated }
+    )
     const { data: likesCount } = trpc.memes.getMemeLikesCount.useQuery(
         { memeId: meme.id },
         { initialData: meme.likesCount }
@@ -80,15 +96,62 @@ export const MemeCard: FC<MemeCardProps> = ({ meme }) => {
                     <div className="">{dayjs(meme.createdAt).fromNow()}</div>
                 </div>
                 <div className="flex space-x-2 md:space-x-3">
-                    <Button
-                        className="flex items-center space-x-2 rounded-full"
-                        size={"sm"}
-                        variant={isLiked ? "default" : "secondary"}
-                        onClick={() => toggleLike({ memeId: meme.id })}
-                    >
-                        <HeartIcon className="h-6 w-6" />
-                        <span>{likesCount}</span>
-                    </Button>
+                    {session?.user ? (
+                        <Button
+                            className="flex items-center space-x-2 rounded-full"
+                            size={"sm"}
+                            variant={isLiked ? "default" : "secondary"}
+                            onClick={() => toggleLike({ memeId: meme.id })}
+                        >
+                            <HeartIcon className="h-6 w-6" />
+                            <span>{likesCount}</span>
+                        </Button>
+                    ) : (
+                        <Dialog>
+                            <DialogTrigger asChild>
+                                <Button
+                                    className="flex items-center space-x-2 rounded-full"
+                                    size={"sm"}
+                                    variant={"secondary"}
+                                >
+                                    <HeartIcon className="h-6 w-6" />
+                                    <span>{likesCount}</span>
+                                </Button>
+                            </DialogTrigger>
+                            <DialogContent>
+                                <DialogHeader>
+                                    <DialogTitle>
+                                        Oh, you want to like
+                                    </DialogTitle>
+                                    <DialogDescription>
+                                        Login required. It will take less than
+                                        10 seconds
+                                    </DialogDescription>
+                                </DialogHeader>
+                                <div className="mt-4 flex space-x-4">
+                                    <LoginLink
+                                        className={cn(
+                                            buttonVariants(),
+                                            "w-full"
+                                        )}
+                                    >
+                                        Sign-in
+                                    </LoginLink>
+                                    <RegisterLink
+                                        className={cn(
+                                            buttonVariants({
+                                                variant: "secondary",
+                                            }),
+                                            "w-full"
+                                        )}
+                                    >
+                                        Sing-up
+                                    </RegisterLink>
+                                </div>
+                            </DialogContent>
+                        </Dialog>
+                    )}
+
                     <Button
                         className="flex items-center space-x-2 rounded-full"
                         size={"sm"}
