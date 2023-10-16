@@ -1,12 +1,7 @@
+"use client"
 import { type FC } from "react"
 import Image from "next/image"
 import Link from "next/link"
-import { type KindePermission } from "@kinde-oss/kinde-auth-nextjs"
-import {
-    LoginLink,
-    LogoutLink,
-    type KindeUser,
-} from "@kinde-oss/kinde-auth-nextjs/server"
 import { ChevronDownIcon } from "@radix-ui/react-icons"
 
 import {
@@ -16,16 +11,18 @@ import {
     DropdownMenuLabel,
     DropdownMenuSeparator,
     DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu"
+} from "@/app/_components/ui/dropdown-menu"
 
 import { MainNav } from "./main-nav"
 import { MobileNav } from "./mobile-nav"
 import { ThemeToggle } from "./theme-toggle"
 import { Button } from "./ui/button"
+import { User } from "next-auth"
+import { signIn, signOut } from "next-auth/react"
 
 interface HeaderProps {
-    user: KindeUser
-    dashboardAccess: KindePermission
+    user: User | undefined
+    dashboardAccess: boolean
 }
 
 export const Header: FC<HeaderProps> = ({ user, dashboardAccess }) => {
@@ -44,10 +41,10 @@ export const Header: FC<HeaderProps> = ({ user, dashboardAccess }) => {
                                 size={"sm"}
                             >
                                 <span className="hidden md:block">
-                                    {user.given_name}
+                                    {user.name}
                                 </span>
                                 <Image
-                                    src={user.picture || ""}
+                                    src={user.image || ""}
                                     height={32}
                                     width={32}
                                     alt="profile pic"
@@ -59,7 +56,7 @@ export const Header: FC<HeaderProps> = ({ user, dashboardAccess }) => {
                         <DropdownMenuContent>
                             <DropdownMenuLabel>My Account</DropdownMenuLabel>
                             <DropdownMenuSeparator />
-                            {dashboardAccess.isGranted ? (
+                            {dashboardAccess ? (
                                 <>
                                     <Link href={"/dashboard"}>
                                         <DropdownMenuItem>
@@ -69,15 +66,15 @@ export const Header: FC<HeaderProps> = ({ user, dashboardAccess }) => {
                                     <DropdownMenuSeparator />
                                 </>
                             ) : null}
-                            <LogoutLink>
-                                <DropdownMenuItem>Sign Out</DropdownMenuItem>
-                            </LogoutLink>
+                            <DropdownMenuItem onClick={() => signOut()}>
+                                Sign Out
+                            </DropdownMenuItem>
                         </DropdownMenuContent>
                     </DropdownMenu>
                 ) : (
-                    <LoginLink>
-                        <Button size={"sm"}>Sign In</Button>
-                    </LoginLink>
+                    <Button size={"sm"} onClick={() => signIn("github")}>
+                        Sign In
+                    </Button>
                 )}
             </div>
         </header>

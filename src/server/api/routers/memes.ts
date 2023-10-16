@@ -1,16 +1,12 @@
-import { getKindeServerSession } from "@kinde-oss/kinde-auth-nextjs/server"
 import { TRPCError } from "@trpc/server"
 import { z } from "zod"
 
-import { prisma } from "@/lib/db"
-import { PERMISSIONS } from "@/lib/permissions"
-
-import { createTRPCRouter, privateProcedure, publicProcedure } from "../trpc"
+import { createTRPCRouter, protectedProcedure, publicProcedure } from "../trpc"
 
 export const memesRouter = createTRPCRouter({
-    getAll: publicProcedure.query(async () => {
+    getAll: publicProcedure.query(async ({ ctx }) => {
         try {
-            const memes = await prisma.meme.findMany({
+            const memes = await ctx.db.meme.findMany({
                 orderBy: {
                     createdAt: "desc",
                 },
@@ -24,24 +20,18 @@ export const memesRouter = createTRPCRouter({
             })
         }
     }),
-    create: privateProcedure
+    create: protectedProcedure
         .input(
             z.object({
                 imageSrc: z.string().min(1),
                 title: z.string().optional(),
             })
         )
-        .mutation(async ({ input }) => {
-            const { getPermission } = getKindeServerSession()
-            if (!getPermission(PERMISSIONS.dashboardAccess).isGranted)
-                throw new TRPCError({
-                    code: "FORBIDDEN",
-                    message: "Only admin accessible",
-                })
-
+        .mutation(async ({ input, ctx }) => {
+            //TODO: only admin accessible
             const { imageSrc, title } = input
             try {
-                const newMeme = await prisma.meme.create({
+                const newMeme = await ctx.db.meme.create({
                     data: {
                         imageSrc,
                         title,
@@ -56,24 +46,24 @@ export const memesRouter = createTRPCRouter({
                 })
             }
         }),
-    toggleLike: privateProcedure
+    toggleLike: protectedProcedure
         .input(
             z.object({
                 memeId: z.string().min(1),
             })
         )
         .mutation(async ({ ctx, input }) => {
-            const { userId } = ctx
+            const { session } = ctx
             const { memeId } = input
 
             try {
-                return await prisma.$transaction(
+                return await ctx.db.$transaction(
                     async (tx) => {
                         // Check if the user has already liked the meme
                         const existingLike = await tx.memeLike.findUnique({
                             where: {
                                 userId_memeId: {
-                                    userId,
+                                    userId: session?.user.id,
                                     memeId,
                                 },
                             },
@@ -85,7 +75,7 @@ export const memesRouter = createTRPCRouter({
                                 where: {
                                     userId_memeId: {
                                         memeId,
-                                        userId,
+                                        userId: session?.user.id,
                                     },
                                 },
                             })
@@ -118,7 +108,7 @@ export const memesRouter = createTRPCRouter({
                             // If the user hasn't liked the meme, add a new like
                             await tx.memeLike.create({
                                 data: {
-                                    userId,
+                                    userId: session?.user.id,
                                     memeId,
                                 },
                             })
@@ -153,16 +143,16 @@ export const memesRouter = createTRPCRouter({
             }
         }),
 
-    isMemeLiked: privateProcedure
+    isMemeLiked: protectedProcedure
         .input(z.object({ memeId: z.string().min(1) }))
         .query(async ({ ctx, input }) => {
-            const { userId } = ctx
+            const { session } = ctx
             const { memeId } = input
             try {
-                const like = await prisma.memeLike.findUnique({
+                const like = await ctx.db.memeLike.findUnique({
                     where: {
                         userId_memeId: {
-                            userId,
+                            userId: session?.user.id,
                             memeId,
                         },
                     },
@@ -178,10 +168,10 @@ export const memesRouter = createTRPCRouter({
         }),
     getMemeLikesCount: publicProcedure
         .input(z.object({ memeId: z.string().min(1) }))
-        .query(async ({ input }) => {
+        .query(async ({ input, ctx }) => {
             const { memeId } = input
             try {
-                const meme = await prisma.meme.findUnique({
+                const meme = await ctx.db.meme.findUnique({
                     where: {
                         id: memeId,
                     },
@@ -200,7 +190,7 @@ export const memesRouter = createTRPCRouter({
                 })
             }
         }),
-    comment: privateProcedure
+    comment: protectedProcedure
         .input(
             z.object({
                 memeId: z.string().min(1),
@@ -209,23 +199,23 @@ export const memesRouter = createTRPCRouter({
         )
         .mutation(async ({ input, ctx }) => {
             const { memeId, text } = input
-            const { getUser } = getKindeServerSession()
-            const user = getUser()
-            if (!user.given_name) {
+            const { session } = ctx
+            const { user } = session
+            if (!user.name) {
                 throw new TRPCError({
                     code: "INTERNAL_SERVER_ERROR",
                     message: "Unable to get commentator name",
                 })
             }
-            if (!user.picture) {
+            if (!user.image) {
                 throw new TRPCError({
                     code: "INTERNAL_SERVER_ERROR",
-                    message: "Unable to get picture of commentator",
+                    message: "Unable to get image of commentator",
                 })
             }
             try {
                 console.log(user)
-                const comment = await prisma.memeComment.create({
+                const comment = await ctx.db.memeComment.create({
                     data: {
                         text,
                         memeId,
@@ -233,7 +223,7 @@ export const memesRouter = createTRPCRouter({
                         lastName: "Semyonov" || null,
                         picture:
                             "https://lh3.googleusercontent.com/a/ACg8ocIvCeaGeTx8oB4g9CE7ffoFl2BIJLZ11hykkFshxccxrwQ=s96-c",
-                        userId: ctx.userId,
+                        userId: ctx.session.user.id,
                     },
                 })
                 if (!comment) {
@@ -242,7 +232,7 @@ export const memesRouter = createTRPCRouter({
                         message: "Unable to create comment",
                     })
                 }
-                await prisma.meme.update({
+                await ctx.db.meme.update({
                     where: {
                         id: memeId,
                     },
@@ -263,10 +253,10 @@ export const memesRouter = createTRPCRouter({
         }),
     getComments: publicProcedure
         .input(z.object({ memeId: z.string().min(1) }))
-        .query(async ({ input }) => {
+        .query(async ({ input, ctx }) => {
             const { memeId } = input
             try {
-                const comments = await prisma.memeComment.findMany({
+                const comments = await ctx.db.memeComment.findMany({
                     where: {
                         memeId,
                     },

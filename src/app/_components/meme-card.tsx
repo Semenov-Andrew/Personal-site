@@ -2,21 +2,18 @@
 
 import { type FC } from "react"
 import Image from "next/image"
-import { RouterInputs } from "@/server/trpc"
 import {
     ChatBubbleOvalLeftIcon,
     HeartIcon,
     PaperAirplaneIcon,
 } from "@heroicons/react/24/outline"
-import { LoginLink, RegisterLink } from "@kinde-oss/kinde-auth-nextjs/server"
-import { MemeComment, type Meme } from "@prisma/client"
+import { type MemeComment, type Meme } from "@prisma/client"
 import dayjs from "dayjs"
 import relativeTime from "dayjs/plugin/relativeTime"
-import { UseFormReturn } from "react-hook-form"
+import { type UseFormReturn } from "react-hook-form"
 import { z } from "zod"
-
-import { cn } from "@/lib/utils"
-import { memeCommentSchema } from "@/lib/validations/meme"
+import { signIn } from "next-auth/react"
+import { type memeCommentSchema } from "@/lib/validations/meme"
 import {
     Dialog,
     DialogContent,
@@ -24,9 +21,9 @@ import {
     DialogHeader,
     DialogTitle,
     DialogTrigger,
-} from "@/components/ui/dialog"
+} from "@/app/_components/ui/dialog"
 
-import { Button, buttonVariants } from "./ui/button"
+import { Button } from "./ui/button"
 import { Form, FormControl, FormField, FormItem, FormMessage } from "./ui/form"
 import { Input } from "./ui/input"
 
@@ -49,7 +46,7 @@ interface MemeCardProps {
         undefined
     >
     onCommentSubmit: (values: z.infer<typeof memeCommentSchema>) => void
-    picture: string | null
+    image: string | null | undefined
     comments: MemeComment[] | undefined
 }
 
@@ -63,7 +60,7 @@ export const MemeCard: FC<MemeCardProps> = ({
     setIsActiveComments,
     commentForm,
     onCommentSubmit,
-    picture,
+    image,
     comments,
 }) => {
     return (
@@ -118,26 +115,9 @@ export const MemeCard: FC<MemeCardProps> = ({
                                         10 seconds
                                     </DialogDescription>
                                 </DialogHeader>
-                                <div className="mt-4 flex space-x-4">
-                                    <LoginLink
-                                        className={cn(
-                                            buttonVariants(),
-                                            "w-full"
-                                        )}
-                                    >
-                                        Sign-in
-                                    </LoginLink>
-                                    <RegisterLink
-                                        className={cn(
-                                            buttonVariants({
-                                                variant: "secondary",
-                                            }),
-                                            "w-full"
-                                        )}
-                                    >
-                                        Sing-up
-                                    </RegisterLink>
-                                </div>
+                                <Button onClick={() => signIn("github")}>
+                                    Sign-in with Github
+                                </Button>
                             </DialogContent>
                         </Dialog>
                     )}
@@ -169,7 +149,7 @@ export const MemeCard: FC<MemeCardProps> = ({
                                             <div className="flex items-center space-x-3">
                                                 {isAuthenticated ? (
                                                     <Image
-                                                        src={picture || ""}
+                                                        src={image || ""}
                                                         height={40}
                                                         width={40}
                                                         alt="your pic"
@@ -212,7 +192,6 @@ export const MemeCard: FC<MemeCardProps> = ({
 }
 
 const Comments = ({ comments }: { comments: MemeComment[] | undefined }) => {
-    console.log(comments)
     if (!comments) return <div>Unable to get comments</div>
     return (
         <div>

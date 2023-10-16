@@ -5,10 +5,10 @@ import type { Metadata } from "next"
 import { Inter } from "next/font/google"
 
 import { cn } from "@/lib/utils"
-import { Toaster } from "@/components/ui/toaster"
-import { ThemeProvider } from "@/components/theme-provider"
-
-import Provider from "./_trpc/provider"
+import { Toaster } from "@/app/_components/ui/toaster"
+import { ThemeProvider } from "@/app/_components/theme-provider"
+import { headers } from "next/headers"
+import { TRPCReactProvider } from "../trpc/react"
 
 const inter = Inter({ subsets: ["latin"] })
 
@@ -27,10 +27,10 @@ export default function RootLayout({
             <head />
             <body className={cn(inter.className, "flex min-h-screen flex-col")}>
                 <ThemeProvider attribute="class">
-                    <Provider>
+                    <TRPCReactProvider headers={headers()}>
                         {children}
                         <Toaster />
-                    </Provider>
+                    </TRPCReactProvider>
                 </ThemeProvider>
             </body>
         </html>

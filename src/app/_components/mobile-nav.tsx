@@ -13,7 +13,7 @@ import {
     SheetContent,
     SheetHeader,
     SheetTrigger,
-} from "@/components/ui/sheet"
+} from "@/app/_components/ui/sheet"
 
 export const MobileNav: FC = () => {
     const pathname = usePathname()

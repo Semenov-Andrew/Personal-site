@@ -1,20 +1,20 @@
 "use client"
 
-import { FC, useState } from "react"
+import { type FC, useState } from "react"
 import { zodResolver } from "@hookform/resolvers/zod"
-import { KindeUser } from "@kinde-oss/kinde-auth-nextjs/server"
-import { Meme } from "@prisma/client"
+import { type Meme } from "@prisma/client"
 import { useForm } from "react-hook-form"
 import { z } from "zod"
 
 import { memeCommentSchema } from "@/lib/validations/meme"
-import { trpc } from "@/app/_trpc/client"
 
 import { MemeCard } from "./meme-card"
+import { type User } from "next-auth"
+import { api } from "@/trpc/react"
 
 interface MemeCardContainerProps {
     isAuthenticated: boolean
-    user: KindeUser
+    user: User | undefined
     meme: Meme
 }
 
@@ -23,22 +23,22 @@ export const MemeCardContainer: FC<MemeCardContainerProps> = ({
     isAuthenticated,
     user,
 }) => {
-    const { data: comments } = trpc.memes.getComments.useQuery({
+    const { data: comments } = api.memes.getComments.useQuery({
         memeId: meme.id,
     })
     const [isActiveComments, setIsActiveComments] = useState(false)
-    const { data: isLiked } = trpc.memes.isMemeLiked.useQuery(
+    const { data: isLiked } = api.memes.isMemeLiked.useQuery(
         {
             memeId: meme.id,
         },
         { enabled: isAuthenticated }
     )
-    const { data: likesCount } = trpc.memes.getMemeLikesCount.useQuery(
+    const { data: likesCount } = api.memes.getMemeLikesCount.useQuery(
         { memeId: meme.id },
         { initialData: meme.likesCount }
     )
-    const utils = trpc.useContext()
-    const { mutate: toggleLike } = trpc.memes.toggleLike.useMutation({
+    const utils = api.useContext()
+    const { mutate: toggleLike } = api.memes.toggleLike.useMutation({
         // optimistic likesCount & isLiked update
         onMutate: async () => {
             await utils.memes.isMemeLiked.cancel({ memeId: meme.id })
@@ -71,7 +71,7 @@ export const MemeCardContainer: FC<MemeCardContainerProps> = ({
             )
         },
     })
-    const { mutate: comment } = trpc.memes.comment.useMutation()
+    const { mutate: comment } = api.memes.comment.useMutation()
     const commentForm = useForm<z.infer<typeof memeCommentSchema>>({
         resolver: zodResolver(memeCommentSchema),
         defaultValues: {
@@ -96,7 +96,7 @@ export const MemeCardContainer: FC<MemeCardContainerProps> = ({
             setIsActiveComments={setIsActiveComments}
             commentForm={commentForm}
             onCommentSubmit={onCommentSubmit}
-            picture={user?.picture}
+            image={user?.image}
             comments={comments}
         />
     )

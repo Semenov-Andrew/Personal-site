@@ -10,7 +10,11 @@ import "./src/env.mjs"
 const config = {
     reactStrictMode: true,
     images: {
-        domains: ["utfs.io", "lh3.googleusercontent.com"],
+        domains: [
+            "utfs.io",
+            "lh3.googleusercontent.com",
+            "avatars.githubusercontent.com",
+        ],
     },
 }
 
