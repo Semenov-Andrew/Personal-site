@@ -2,13 +2,21 @@
 
 import { type FC } from "react"
 import Image from "next/image"
-import { ChatBubbleOvalLeftIcon, HeartIcon } from "@heroicons/react/24/outline"
+import { RouterInputs } from "@/server/trpc"
+import {
+    ChatBubbleOvalLeftIcon,
+    HeartIcon,
+    PaperAirplaneIcon,
+} from "@heroicons/react/24/outline"
 import { LoginLink, RegisterLink } from "@kinde-oss/kinde-auth-nextjs/server"
-import { type Meme } from "@prisma/client"
+import { MemeComment, type Meme } from "@prisma/client"
 import dayjs from "dayjs"
 import relativeTime from "dayjs/plugin/relativeTime"
+import { UseFormReturn } from "react-hook-form"
+import { z } from "zod"
 
 import { cn } from "@/lib/utils"
+import { memeCommentSchema } from "@/lib/validations/meme"
 import {
     Dialog,
     DialogContent,
@@ -17,65 +25,47 @@ import {
     DialogTitle,
     DialogTrigger,
 } from "@/components/ui/dialog"
-import { trpc } from "@/app/_trpc/client"
 
-import { Header } from "./header"
-import { LoginButton } from "./login-button"
 import { Button, buttonVariants } from "./ui/button"
+import { Form, FormControl, FormField, FormItem, FormMessage } from "./ui/form"
+import { Input } from "./ui/input"
 
 dayjs.extend(relativeTime)
 dayjs.locale("ru")
 
 interface MemeCardProps {
     meme: Meme
+    isAuthenticated: boolean
+    isLiked: boolean | undefined
+    likesCount: number
+    toggleLike: ({ memeId }: { memeId: string }) => void
+    isActiveComments: boolean
+    setIsActiveComments: (isActiveComments: boolean) => void
+    commentForm: UseFormReturn<
+        {
+            text: string
+        },
+        any,
+        undefined
+    >
+    onCommentSubmit: (values: z.infer<typeof memeCommentSchema>) => void
+    picture: string | null
+    comments: MemeComment[] | undefined
 }
 
-export const MemeCard: FC<MemeCardProps> = ({ meme }) => {
-    const { data: session } = trpc.auth.getKindeSession.useQuery()
-    const { data: isLiked } = trpc.memes.isMemeLiked.useQuery(
-        {
-            memeId: meme.id,
-        },
-        { enabled: session?.isAuthenticated }
-    )
-    const { data: likesCount } = trpc.memes.getMemeLikesCount.useQuery(
-        { memeId: meme.id },
-        { initialData: meme.likesCount }
-    )
-    const utils = trpc.useContext()
-    const { mutate: toggleLike } = trpc.memes.toggleLike.useMutation({
-        // optimistic likesCount & isLiked update
-        onMutate: async () => {
-            await utils.memes.isMemeLiked.cancel({ memeId: meme.id })
-            await utils.memes.getMemeLikesCount.cancel({ memeId: meme.id })
-            const prevLikesCount = utils.memes.getMemeLikesCount.getData({
-                memeId: meme.id,
-            })
-            const prevIsLiked = utils.memes.isMemeLiked.getData({
-                memeId: meme.id,
-            })
-            utils.memes.getMemeLikesCount.setData(
-                { memeId: meme.id },
-                (oldQueryData: number | undefined) =>
-                    (oldQueryData ?? 0) + (isLiked ? -1 : 1)
-            )
-            utils.memes.isMemeLiked.setData(
-                { memeId: meme.id },
-                (oldQueryData: boolean | undefined) => !oldQueryData
-            )
-            return { isLiked: prevIsLiked, likesCount: prevLikesCount }
-        },
-        onError: (_, __, ctx) => {
-            utils.memes.isMemeLiked.setData(
-                { memeId: meme.id },
-                ctx?.isLiked ?? false
-            )
-            utils.memes.getMemeLikesCount.setData(
-                { memeId: meme.id },
-                ctx?.likesCount ?? 0
-            )
-        },
-    })
+export const MemeCard: FC<MemeCardProps> = ({
+    meme,
+    isAuthenticated,
+    isLiked,
+    likesCount,
+    toggleLike,
+    isActiveComments,
+    setIsActiveComments,
+    commentForm,
+    onCommentSubmit,
+    picture,
+    comments,
+}) => {
     return (
         <div className="ml-[calc(50%-50vw)] flex w-screen flex-col overflow-hidden sm:ml-0 sm:w-full ">
             <div className="flex flex-1 items-center justify-center bg-muted sm:rounded-lg lg:px-4 lg:py-2">
@@ -96,7 +86,7 @@ export const MemeCard: FC<MemeCardProps> = ({ meme }) => {
                     <div className="">{dayjs(meme.createdAt).fromNow()}</div>
                 </div>
                 <div className="flex space-x-2 md:space-x-3">
-                    {session?.user ? (
+                    {isAuthenticated ? (
                         <Button
                             className="flex items-center space-x-2 rounded-full"
                             size={"sm"}
@@ -156,12 +146,79 @@ export const MemeCard: FC<MemeCardProps> = ({ meme }) => {
                         className="flex items-center space-x-2 rounded-full"
                         size={"sm"}
                         variant={"secondary"}
+                        onClick={() => setIsActiveComments(true)}
                     >
                         <ChatBubbleOvalLeftIcon className="h-6 w-6" />
                         <span>{meme.commentsCount}</span>
                     </Button>
                 </div>
             </div>
+            {isActiveComments ? (
+                <div className="mx-2 mt-2 border-t py-4 sm:mx-4">
+                    <Comments comments={comments} />
+                    <Form {...commentForm}>
+                        <form
+                            onSubmit={commentForm.handleSubmit(onCommentSubmit)}
+                        >
+                            <FormField
+                                control={commentForm.control}
+                                name="text"
+                                render={({ field }) => {
+                                    return (
+                                        <FormItem>
+                                            <div className="flex items-center space-x-3">
+                                                {isAuthenticated ? (
+                                                    <Image
+                                                        src={picture || ""}
+                                                        height={40}
+                                                        width={40}
+                                                        alt="your pic"
+                                                        className="rounded-full"
+                                                    />
+                                                ) : (
+                                                    <div className="h-[40px] w-[40px] shrink-0 rounded-full bg-secondary"></div>
+                                                )}
+
+                                                <FormControl>
+                                                    <Input
+                                                        autoFocus
+                                                        placeholder="Leave a comment..."
+                                                        {...field}
+                                                    />
+                                                </FormControl>
+                                                <Button
+                                                    disabled={
+                                                        field.value.length === 0
+                                                    }
+                                                    type="submit"
+                                                    variant={"ghost"}
+                                                    size={"sm"}
+                                                >
+                                                    <PaperAirplaneIcon className="h-6 w-6" />
+                                                </Button>
+                                            </div>
+
+                                            <FormMessage />
+                                        </FormItem>
+                                    )
+                                }}
+                            />
+                        </form>
+                    </Form>
+                </div>
+            ) : null}
+        </div>
+    )
+}
+
+const Comments = ({ comments }: { comments: MemeComment[] | undefined }) => {
+    console.log(comments)
+    if (!comments) return <div>Unable to get comments</div>
+    return (
+        <div>
+            {comments.map((comment, i) => (
+                <div key={i}>{comment.text}</div>
+            ))}
         </div>
     )
 }

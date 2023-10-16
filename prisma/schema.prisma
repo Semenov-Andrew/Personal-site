@@ -12,9 +12,10 @@ datasource db {
 }
 
 model User {
-  id         String     @id @unique // mathes kinde user id
-  email      String     @unique
-  memesLikes MemeLike[]
+  id            String        @id @unique // mathes kinde user id
+  email         String        @unique
+  picture       String        @unique
+  memesLikes    MemeLike[]
   memesComments MemeComment[]
 }
 
@@ -46,7 +47,11 @@ model MemeLike {
 }
 
 model MemeComment {
+  id        String   @id @default(cuid())
   userId    String
+  picture   String
+  firstName String
+  lastName  String?
   memeId    String
   createdAt DateTime @default(now())
   text      String
@@ -54,7 +59,6 @@ model MemeComment {
   meme Meme @relation(fields: [memeId], references: [id])
   user User @relation(fields: [userId], references: [id])
 
-  @@id([userId, memeId])
   @@index([memeId])
   @@index([userId])
 }

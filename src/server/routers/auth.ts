@@ -14,6 +14,11 @@ export const authRouter = createTRPCRouter({
                 code: "UNAUTHORIZED",
                 message: "missed id or email",
             })
+        if (!user.picture)
+            throw new TRPCError({
+                code: "UNAUTHORIZED",
+                message: "missed picture",
+            })
 
         // check if the user is in the database
         const dbUser = await prisma.user.findFirst({
@@ -28,6 +33,7 @@ export const authRouter = createTRPCRouter({
                 data: {
                     id: user.id,
                     email: user.email,
+                    picture: user.picture,
                 },
             })
         }

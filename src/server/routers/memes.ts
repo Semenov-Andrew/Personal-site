@@ -200,4 +200,87 @@ export const memesRouter = createTRPCRouter({
                 })
             }
         }),
+    comment: privateProcedure
+        .input(
+            z.object({
+                memeId: z.string().min(1),
+                text: z.string().min(10),
+            })
+        )
+        .mutation(async ({ input, ctx }) => {
+            const { memeId, text } = input
+            const { getUser } = getKindeServerSession()
+            const user = getUser()
+            if (!user.given_name) {
+                throw new TRPCError({
+                    code: "INTERNAL_SERVER_ERROR",
+                    message: "Unable to get commentator name",
+                })
+            }
+            if (!user.picture) {
+                throw new TRPCError({
+                    code: "INTERNAL_SERVER_ERROR",
+                    message: "Unable to get picture of commentator",
+                })
+            }
+            try {
+                console.log(user)
+                const comment = await prisma.memeComment.create({
+                    data: {
+                        text,
+                        memeId,
+                        firstName: "Andrew",
+                        lastName: "Semyonov" || null,
+                        picture:
+                            "https://lh3.googleusercontent.com/a/ACg8ocIvCeaGeTx8oB4g9CE7ffoFl2BIJLZ11hykkFshxccxrwQ=s96-c",
+                        userId: ctx.userId,
+                    },
+                })
+                if (!comment) {
+                    throw new TRPCError({
+                        code: "INTERNAL_SERVER_ERROR",
+                        message: "Unable to create comment",
+                    })
+                }
+                await prisma.meme.update({
+                    where: {
+                        id: memeId,
+                    },
+                    data: {
+                        commentsCount: {
+                            increment: 1,
+                        },
+                    },
+                })
+                return { success: true }
+            } catch (e) {
+                console.error(e)
+                throw new TRPCError({
+                    code: "INTERNAL_SERVER_ERROR",
+                    message: "Unable to create comment",
+                })
+            }
+        }),
+    getComments: publicProcedure
+        .input(z.object({ memeId: z.string().min(1) }))
+        .query(async ({ input }) => {
+            const { memeId } = input
+            try {
+                const comments = await prisma.memeComment.findMany({
+                    where: {
+                        memeId,
+                    },
+                })
+                if (!comments) {
+                    return []
+                }
+                return comments
+            } catch (e) {
+                console.error(e)
+                throw new TRPCError({
+                    code: "INTERNAL_SERVER_ERROR",
+                    message: "Unable to get comments",
+                })
+            }
+        }),
 })
