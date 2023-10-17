@@ -2,6 +2,15 @@ import { TRPCError } from "@trpc/server"
 import { z } from "zod"
 
 import { createTRPCRouter, protectedProcedure, publicProcedure } from "../trpc"
+import { Ratelimit } from "@upstash/ratelimit"
+import { Redis } from "@upstash/redis"
+
+const ratelimit = new Ratelimit({
+    redis: Redis.fromEnv(),
+    limiter: Ratelimit.slidingWindow(15, "1 m"),
+    analytics: true,
+    prefix: "@upstash/ratelimit",
+})
 
 export const memesRouter = createTRPCRouter({
     getAll: publicProcedure.query(async ({ ctx }) => {
@@ -55,6 +64,13 @@ export const memesRouter = createTRPCRouter({
         .mutation(async ({ ctx, input }) => {
             const { session } = ctx
             const { memeId } = input
+
+            const { success } = await ratelimit.limit(session.user.id)
+
+            if (!success)
+                throw new TRPCError({
+                    code: "TOO_MANY_REQUESTS",
+                })
 
             try {
                 return await ctx.db.$transaction(
@@ -200,6 +216,13 @@ export const memesRouter = createTRPCRouter({
         .mutation(async ({ input, ctx }) => {
             const { memeId, text } = input
             const { session } = ctx
+            const { success } = await ratelimit.limit(session.user.id)
+
+            if (!success)
+                throw new TRPCError({
+                    code: "TOO_MANY_REQUESTS",
+                })
+
             const { user } = session
             if (!user.name) {
                 throw new TRPCError({

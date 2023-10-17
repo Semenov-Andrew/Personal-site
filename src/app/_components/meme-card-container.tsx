@@ -1,6 +1,6 @@
 "use client"
 
-import { type FC, useState } from "react"
+import { type FC, useState, useEffect } from "react"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { MemeComment, type Meme } from "@prisma/client"
 import { useForm } from "react-hook-form"
@@ -11,6 +11,7 @@ import { memeCommentSchema } from "@/lib/validations/meme"
 import { MemeCard } from "./meme-card"
 import { type User } from "next-auth"
 import { api } from "@/trpc/react"
+import { useToast } from "./ui/use-toast"
 
 interface MemeCardContainerProps {
     isAuthenticated: boolean
@@ -23,6 +24,7 @@ export const MemeCardContainer: FC<MemeCardContainerProps> = ({
     isAuthenticated,
     user,
 }) => {
+    const { toast } = useToast()
     const { data: comments } = api.memes.getComments.useQuery({
         memeId: meme.id,
     })
@@ -42,13 +44,10 @@ export const MemeCardContainer: FC<MemeCardContainerProps> = ({
         // optimistic likesCount & isLiked update
         onMutate: async () => {
             await utils.memes.isMemeLiked.cancel({ memeId: meme.id })
-            await utils.memes.getMemeLikesCount.cancel({ memeId: meme.id })
-            const prevLikesCount = utils.memes.getMemeLikesCount.getData({
+            await utils.memes.getMemeLikesCount.cancel({
                 memeId: meme.id,
             })
-            const prevIsLiked = utils.memes.isMemeLiked.getData({
-                memeId: meme.id,
-            })
+
             utils.memes.getMemeLikesCount.setData(
                 { memeId: meme.id },
                 (oldQueryData: number | undefined) =>
@@ -58,9 +57,20 @@ export const MemeCardContainer: FC<MemeCardContainerProps> = ({
                 { memeId: meme.id },
                 (oldQueryData: boolean | undefined) => !oldQueryData
             )
+            const prevLikesCount = utils.memes.getMemeLikesCount.getData({
+                memeId: meme.id,
+            })
+            const prevIsLiked = utils.memes.isMemeLiked.getData({
+                memeId: meme.id,
+            })
             return { isLiked: prevIsLiked, likesCount: prevLikesCount }
         },
-        onError: (_, __, ctx) => {
+        onError: ({ data, message }, __, ctx) => {
+            if (data?.code === "TOO_MANY_REQUESTS")
+                toast({
+                    title: "You reach rate limit",
+                    description: message,
+                })
             utils.memes.isMemeLiked.setData(
                 { memeId: meme.id },
                 ctx?.isLiked ?? false
