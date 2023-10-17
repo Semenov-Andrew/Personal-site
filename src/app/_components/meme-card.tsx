@@ -35,6 +35,7 @@ interface MemeCardProps {
     isAuthenticated: boolean
     isLiked: boolean | undefined
     likesCount: number
+    commentsCount: number
     toggleLike: ({ memeId }: { memeId: string }) => void
     isActiveComments: boolean
     setIsActiveComments: (isActiveComments: boolean) => void
@@ -55,6 +56,7 @@ export const MemeCard: FC<MemeCardProps> = ({
     isAuthenticated,
     isLiked,
     likesCount,
+    commentsCount,
     toggleLike,
     isActiveComments,
     setIsActiveComments,
@@ -129,7 +131,7 @@ export const MemeCard: FC<MemeCardProps> = ({
                         onClick={() => setIsActiveComments(true)}
                     >
                         <ChatBubbleOvalLeftIcon className="h-6 w-6" />
-                        <span>{meme.commentsCount}</span>
+                        <span>{commentsCount}</span>
                     </Button>
                 </div>
             </div>

@@ -1,6 +1,6 @@
 "use client"
 
-import { type FC, useState, useEffect } from "react"
+import { type FC, useState } from "react"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { MemeComment, type Meme } from "@prisma/client"
 import { useForm } from "react-hook-form"
@@ -25,42 +25,46 @@ export const MemeCardContainer: FC<MemeCardContainerProps> = ({
     user,
 }) => {
     const { toast } = useToast()
+    const utils = api.useContext()
+    const [isActiveComments, setIsActiveComments] = useState(false)
     const { data: comments } = api.memes.getComments.useQuery({
         memeId: meme.id,
     })
-    const [isActiveComments, setIsActiveComments] = useState(false)
-    const { data: isLiked } = api.memes.isMemeLiked.useQuery(
+    const { data: isLiked } = api.memes.isLiked.useQuery(
         {
             memeId: meme.id,
         },
         { enabled: isAuthenticated }
     )
-    const { data: likesCount } = api.memes.getMemeLikesCount.useQuery(
+    const { data: commentsCount } = api.memes.getCommentsCount.useQuery(
+        { memeId: meme.id },
+        { initialData: meme.commentsCount }
+    )
+    const { data: likesCount } = api.memes.getLikesCount.useQuery(
         { memeId: meme.id },
         { initialData: meme.likesCount }
     )
-    const utils = api.useContext()
     const { mutate: toggleLike } = api.memes.toggleLike.useMutation({
         // optimistic likesCount & isLiked update
         onMutate: async () => {
-            await utils.memes.isMemeLiked.cancel({ memeId: meme.id })
-            await utils.memes.getMemeLikesCount.cancel({
+            await utils.memes.isLiked.cancel({ memeId: meme.id })
+            await utils.memes.getLikesCount.cancel({
                 memeId: meme.id,
             })
 
-            utils.memes.getMemeLikesCount.setData(
+            utils.memes.getLikesCount.setData(
                 { memeId: meme.id },
                 (oldQueryData: number | undefined) =>
                     (oldQueryData ?? 0) + (isLiked ? -1 : 1)
             )
-            utils.memes.isMemeLiked.setData(
+            utils.memes.isLiked.setData(
                 { memeId: meme.id },
                 (oldQueryData: boolean | undefined) => !oldQueryData
             )
-            const prevLikesCount = utils.memes.getMemeLikesCount.getData({
+            const prevLikesCount = utils.memes.getLikesCount.getData({
                 memeId: meme.id,
             })
-            const prevIsLiked = utils.memes.isMemeLiked.getData({
+            const prevIsLiked = utils.memes.isLiked.getData({
                 memeId: meme.id,
             })
             return { isLiked: prevIsLiked, likesCount: prevLikesCount }
@@ -71,11 +75,11 @@ export const MemeCardContainer: FC<MemeCardContainerProps> = ({
                     title: "You reach rate limit",
                     description: message,
                 })
-            utils.memes.isMemeLiked.setData(
+            utils.memes.isLiked.setData(
                 { memeId: meme.id },
                 ctx?.isLiked ?? false
             )
-            utils.memes.getMemeLikesCount.setData(
+            utils.memes.getLikesCount.setData(
                 { memeId: meme.id },
                 ctx?.likesCount ?? 0
             )
@@ -85,7 +89,11 @@ export const MemeCardContainer: FC<MemeCardContainerProps> = ({
         // optimistic comment sending
         onMutate: async ({ text, memeId }) => {
             await utils.memes.getComments.cancel({ memeId: meme.id })
+            await utils.memes.getCommentsCount.cancel({ memeId: meme.id })
             const prevComments = utils.memes.getComments.getData({
+                memeId: meme.id,
+            })
+            const prevCommentsCount = utils.memes.getCommentsCount.getData({
                 memeId: meme.id,
             })
             const optimisticComment: MemeComment = {
@@ -101,12 +109,20 @@ export const MemeCardContainer: FC<MemeCardContainerProps> = ({
                 { memeId: meme.id },
                 (oldQueryData) => [...(oldQueryData ?? []), optimisticComment]
             )
-            return { comments: prevComments }
+            utils.memes.getCommentsCount.setData(
+                { memeId: meme.id },
+                (oldQueryData) => (oldQueryData ?? 0) + 1
+            )
+            return { comments: prevComments, commentsCount: prevCommentsCount }
         },
         onError: (_, __, ctx) => {
             utils.memes.getComments.setData(
                 { memeId: meme.id },
                 ctx?.comments ?? []
+            )
+            utils.memes.getCommentsCount.setData(
+                { memeId: meme.id },
+                ctx?.commentsCount ?? 0
             )
         },
     })
@@ -130,6 +146,7 @@ export const MemeCardContainer: FC<MemeCardContainerProps> = ({
             isLiked={isLiked}
             toggleLike={toggleLike}
             likesCount={likesCount}
+            commentsCount={commentsCount}
             isAuthenticated={isAuthenticated}
             isActiveComments={isActiveComments}
             setIsActiveComments={setIsActiveComments}

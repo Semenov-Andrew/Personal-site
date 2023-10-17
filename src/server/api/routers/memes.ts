@@ -159,18 +159,16 @@ export const memesRouter = createTRPCRouter({
             }
         }),
 
-    isMemeLiked: protectedProcedure
+    isLiked: protectedProcedure
         .input(z.object({ memeId: z.string().min(1) }))
         .query(async ({ ctx, input }) => {
             const { session } = ctx
             const { memeId } = input
             try {
-                const like = await ctx.db.memeLike.findUnique({
+                const like = await ctx.db.memeLike.findFirst({
                     where: {
-                        userId_memeId: {
-                            userId: session?.user.id,
-                            memeId,
-                        },
+                        userId: session.user.id,
+                        memeId,
                     },
                 })
                 return !!like
@@ -182,12 +180,12 @@ export const memesRouter = createTRPCRouter({
                 })
             }
         }),
-    getMemeLikesCount: publicProcedure
+    getLikesCount: publicProcedure
         .input(z.object({ memeId: z.string().min(1) }))
         .query(async ({ input, ctx }) => {
             const { memeId } = input
             try {
-                const meme = await ctx.db.meme.findUnique({
+                const meme = await ctx.db.meme.findFirst({
                     where: {
                         id: memeId,
                     },
@@ -203,6 +201,30 @@ export const memesRouter = createTRPCRouter({
                 throw new TRPCError({
                     code: "INTERNAL_SERVER_ERROR",
                     message: "An error occurred while getting likes count",
+                })
+            }
+        }),
+    getCommentsCount: publicProcedure
+        .input(z.object({ memeId: z.string().min(1) }))
+        .query(async ({ input, ctx }) => {
+            const { memeId } = input
+            try {
+                const meme = await ctx.db.meme.findFirst({
+                    where: {
+                        id: memeId,
+                    },
+                })
+                if (!meme)
+                    throw new TRPCError({
+                        code: "NOT_FOUND",
+                        message: "meme not found",
+                    })
+                return meme.commentsCount
+            } catch (e) {
+                console.error(e)
+                throw new TRPCError({
+                    code: "INTERNAL_SERVER_ERROR",
+                    message: "An error occurred while getting comments count",
                 })
             }
         }),
