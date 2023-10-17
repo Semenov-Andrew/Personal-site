@@ -2,7 +2,7 @@
 
 import { type FC, useState } from "react"
 import { zodResolver } from "@hookform/resolvers/zod"
-import { type Meme } from "@prisma/client"
+import { MemeComment, type Meme } from "@prisma/client"
 import { useForm } from "react-hook-form"
 import { z } from "zod"
 
@@ -71,7 +71,35 @@ export const MemeCardContainer: FC<MemeCardContainerProps> = ({
             )
         },
     })
-    const { mutate: comment } = api.memes.comment.useMutation()
+    const { mutate: comment } = api.memes.comment.useMutation({
+        // optimistic comment sending
+        onMutate: async ({ text, memeId }) => {
+            await utils.memes.getComments.cancel({ memeId: meme.id })
+            const prevComments = utils.memes.getComments.getData({
+                memeId: meme.id,
+            })
+            const optimisticComment: MemeComment = {
+                id: Math.random().toString(),
+                commentatorId: user?.id || Math.random().toString(),
+                commentatorName: user?.name || "",
+                image: user?.image || "",
+                memeId,
+                createdAt: new Date(),
+                text: text,
+            }
+            utils.memes.getComments.setData(
+                { memeId: meme.id },
+                (oldQueryData) => [...(oldQueryData ?? []), optimisticComment]
+            )
+            return { comments: prevComments }
+        },
+        onError: (_, __, ctx) => {
+            utils.memes.getComments.setData(
+                { memeId: meme.id },
+                ctx?.comments ?? []
+            )
+        },
+    })
     const commentForm = useForm<z.infer<typeof memeCommentSchema>>({
         resolver: zodResolver(memeCommentSchema),
         defaultValues: {

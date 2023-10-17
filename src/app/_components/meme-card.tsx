@@ -161,7 +161,7 @@ export const MemeCard: FC<MemeCardProps> = ({
 
                                                 <FormControl>
                                                     <Input
-                                                        autoComplete="no"
+                                                        autoComplete="off"
                                                         autoFocus
                                                         placeholder="Leave a comment..."
                                                         {...field}
