@@ -116,7 +116,7 @@ export const MemeCard: FC<MemeCardProps> = ({
                                     </DialogDescription>
                                 </DialogHeader>
                                 <Button onClick={() => signIn("github")}>
-                                    Sign-in with Github
+                                    Sign-in
                                 </Button>
                             </DialogContent>
                         </Dialog>
@@ -136,56 +136,68 @@ export const MemeCard: FC<MemeCardProps> = ({
             {isActiveComments ? (
                 <div className="mx-2 mt-2 border-t py-4 sm:mx-4">
                     <Comments comments={comments} />
-                    <Form {...commentForm}>
-                        <form
-                            onSubmit={commentForm.handleSubmit(onCommentSubmit)}
+                    {isAuthenticated ? (
+                        <Form {...commentForm}>
+                            <form
+                                onSubmit={commentForm.handleSubmit(
+                                    onCommentSubmit
+                                )}
+                            >
+                                <FormField
+                                    control={commentForm.control}
+                                    name="text"
+                                    render={({ field }) => {
+                                        return (
+                                            <FormItem>
+                                                <div className="flex items-center space-x-3">
+                                                    {isAuthenticated ? (
+                                                        <Image
+                                                            src={image || ""}
+                                                            height={40}
+                                                            width={40}
+                                                            alt="your pic"
+                                                            className="rounded-full"
+                                                        />
+                                                    ) : (
+                                                        <div className="h-[40px] w-[40px] shrink-0 rounded-full bg-secondary"></div>
+                                                    )}
+
+                                                    <FormControl>
+                                                        <Input
+                                                            autoComplete="off"
+                                                            autoFocus
+                                                            placeholder="Leave a comment..."
+                                                            {...field}
+                                                        />
+                                                    </FormControl>
+                                                    <Button
+                                                        disabled={
+                                                            field.value
+                                                                .length === 0
+                                                        }
+                                                        type="submit"
+                                                        variant={"ghost"}
+                                                        size={"sm"}
+                                                    >
+                                                        <PaperAirplaneIcon className="h-6 w-6" />
+                                                    </Button>
+                                                </div>
+
+                                                <FormMessage />
+                                            </FormItem>
+                                        )
+                                    }}
+                                />
+                            </form>
+                        </Form>
+                    ) : (
+                        <Button
+                            className="w-full"
+                            onClick={() => signIn("github")}
                         >
-                            <FormField
-                                control={commentForm.control}
-                                name="text"
-                                render={({ field }) => {
-                                    return (
-                                        <FormItem>
-                                            <div className="flex items-center space-x-3">
-                                                {isAuthenticated ? (
-                                                    <Image
-                                                        src={image || ""}
-                                                        height={40}
-                                                        width={40}
-                                                        alt="your pic"
-                                                        className="rounded-full"
-                                                    />
-                                                ) : (
-                                                    <div className="h-[40px] w-[40px] shrink-0 rounded-full bg-secondary"></div>
-                                                )}
-
-                                                <FormControl>
-                                                    <Input
-                                                        autoComplete="off"
-                                                        autoFocus
-                                                        placeholder="Leave a comment..."
-                                                        {...field}
-                                                    />
-                                                </FormControl>
-                                                <Button
-                                                    disabled={
-                                                        field.value.length === 0
-                                                    }
-                                                    type="submit"
-                                                    variant={"ghost"}
-                                                    size={"sm"}
-                                                >
-                                                    <PaperAirplaneIcon className="h-6 w-6" />
-                                                </Button>
-                                            </div>
-
-                                            <FormMessage />
-                                        </FormItem>
-                                    )
-                                }}
-                            />
-                        </form>
-                    </Form>
+                            Sign in to leave comments
+                        </Button>
+                    )}
                 </div>
             ) : null}
         </div>
@@ -194,6 +206,7 @@ export const MemeCard: FC<MemeCardProps> = ({
 
 const Comments = ({ comments }: { comments: MemeComment[] | undefined }) => {
     if (!comments) return <div>Unable to get comments</div>
+    if (!comments.length) return null
     return (
         <div className="space-y-4 py-4">
             {comments.map((comment) => (
