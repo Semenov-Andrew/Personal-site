@@ -39,20 +39,19 @@ model MemeLike {
 }
 
 model MemeComment {
-  id        String   @id @default(cuid())
-  userId    String
-  picture   String
-  firstName String
-  lastName  String?
-  memeId    String
-  createdAt DateTime @default(now())
-  text      String
+  id              String   @id @default(cuid())
+  commentatorId   String
+  image           String
+  commentatorName String
+  memeId          String
+  createdAt       DateTime @default(now())
+  text            String   @db.Text
 
   meme Meme @relation(fields: [memeId], references: [id])
-  user User @relation(fields: [userId], references: [id])
+  user User @relation(fields: [commentatorId], references: [id])
 
   @@index([memeId])
-  @@index([userId])
+  @@index([commentatorId])
 }
 
 // Necessary for Next auth

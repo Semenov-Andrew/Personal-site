@@ -84,6 +84,7 @@ export const MemeCardContainer: FC<MemeCardContainerProps> = ({
             memeId: meme.id,
             text: values.text,
         })
+        commentForm.reset()
     }
     return (
         <MemeCard

@@ -161,6 +161,7 @@ export const MemeCard: FC<MemeCardProps> = ({
 
                                                 <FormControl>
                                                     <Input
+                                                        autoComplete="no"
                                                         autoFocus
                                                         placeholder="Leave a comment..."
                                                         {...field}
@@ -194,9 +195,30 @@ export const MemeCard: FC<MemeCardProps> = ({
 const Comments = ({ comments }: { comments: MemeComment[] | undefined }) => {
     if (!comments) return <div>Unable to get comments</div>
     return (
-        <div>
-            {comments.map((comment, i) => (
-                <div key={i}>{comment.text}</div>
+        <div className="space-y-4 py-4">
+            {comments.map((comment) => (
+                <div className="flex" key={comment.id}>
+                    <div className="flex space-x-2">
+                        <div className="shrink-0">
+                            <Image
+                                className="rounded-full"
+                                src={comment.image}
+                                width={40}
+                                height={40}
+                                alt={`${comment.commentatorName} image`}
+                            />
+                        </div>
+                        <div className="text-sm">
+                            <div className="mb-1 font-semibold">
+                                {comment.commentatorName}
+                            </div>
+                            <div>{comment.text}</div>
+                            <div className=" mt-1 text-muted-foreground">
+                                {dayjs(comment.createdAt).fromNow()}
+                            </div>
+                        </div>
+                    </div>
+                </div>
             ))}
         </div>
     )

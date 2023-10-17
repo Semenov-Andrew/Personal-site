@@ -219,11 +219,9 @@ export const memesRouter = createTRPCRouter({
                     data: {
                         text,
                         memeId,
-                        firstName: "Andrew",
-                        lastName: "Semyonov" || null,
-                        picture:
-                            "https://lh3.googleusercontent.com/a/ACg8ocIvCeaGeTx8oB4g9CE7ffoFl2BIJLZ11hykkFshxccxrwQ=s96-c",
-                        userId: ctx.session.user.id,
+                        commentatorId: user.id,
+                        commentatorName: user.name,
+                        image: user.image,
                     },
                 })
                 if (!comment) {
