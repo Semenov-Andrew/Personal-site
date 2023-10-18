@@ -30,8 +30,8 @@ model MemeLike {
   memeId  String
   likedAt DateTime @default(now())
 
-  meme Meme @relation(fields: [memeId], references: [id])
-  user User @relation(fields: [userId], references: [id])
+  meme Meme @relation(fields: [memeId], references: [id], onDelete: Cascade)
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@id([userId, memeId])
   @@index([memeId])
@@ -47,8 +47,8 @@ model MemeComment {
   createdAt       DateTime @default(now())
   text            String   @db.Text
 
-  meme Meme @relation(fields: [memeId], references: [id])
-  user User @relation(fields: [commentatorId], references: [id])
+  meme Meme @relation(fields: [memeId], references: [id], onDelete: Cascade)
+  user User @relation(fields: [commentatorId], references: [id], onDelete: Cascade)
 
   @@index([memeId])
   @@index([commentatorId])
