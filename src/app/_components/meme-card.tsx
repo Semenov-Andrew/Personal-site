@@ -1,6 +1,6 @@
 "use client"
 
-import { ReactElement, type FC } from "react"
+import { ReactElement, type FC, useState } from "react"
 import Image from "next/image"
 import {
     ChatBubbleOvalLeftIcon,
@@ -10,10 +10,10 @@ import {
 import { type MemeComment, type Meme } from "@prisma/client"
 import dayjs from "dayjs"
 import relativeTime from "dayjs/plugin/relativeTime"
-import { type UseFormReturn } from "react-hook-form"
+import { useForm } from "react-hook-form"
 import { z } from "zod"
 import { signIn } from "next-auth/react"
-import { type memeCommentSchema } from "@/lib/validations/meme"
+import { memeCommentSchema } from "@/lib/validations/meme"
 import {
     Dialog,
     DialogContent,
@@ -26,45 +26,27 @@ import {
 import { Button } from "./ui/button"
 import { Form, FormControl, FormField, FormItem, FormMessage } from "./ui/form"
 import { Input } from "./ui/input"
+import { User } from "next-auth"
+import { useToast } from "./ui/use-toast"
+import { api } from "@/trpc/react"
+import { zodResolver } from "@hookform/resolvers/zod"
+import { Spinner } from "./ui/spinner"
 
 dayjs.extend(relativeTime)
 dayjs.locale("ru")
 
 interface MemeCardProps {
-    meme: Meme
     isAuthenticated: boolean
-    isLiked: boolean | undefined
-    likesCount: number
-    commentsCount: number
-    toggleLike: ({ memeId }: { memeId: string }) => void
-    isActiveComments: boolean
-    setIsActiveComments: (isActiveComments: boolean) => void
-    commentForm: UseFormReturn<
-        {
-            text: string
-        },
-        any,
-        undefined
-    >
-    onCommentSubmit: (values: z.infer<typeof memeCommentSchema>) => void
-    currentUserImage: string | null | undefined
-    comments: MemeComment[] | undefined
+    user: User | undefined
+    meme: Meme
 }
 
 export const MemeCard: FC<MemeCardProps> = ({
     meme,
     isAuthenticated,
-    isLiked,
-    likesCount,
-    commentsCount,
-    toggleLike,
-    isActiveComments,
-    setIsActiveComments,
-    commentForm,
-    onCommentSubmit,
-    currentUserImage,
-    comments,
+    user,
 }) => {
+    const [isActiveComments, setIsActiveComments] = useState(false)
     return (
         <div className="ml-[calc(50%-50vw)] flex w-screen flex-col overflow-hidden sm:ml-0 sm:w-full ">
             <MemeImage imageSrc={meme.imageSrc} />
@@ -77,33 +59,21 @@ export const MemeCard: FC<MemeCardProps> = ({
                 <MemeControl
                     {...{
                         isAuthenticated,
-                        isLiked,
-                        likesCount,
-                        commentsCount,
-                        toggleLike,
+                        initialCommentsCount: meme.commentsCount,
                         setIsActiveComments,
                         memeId: meme.id,
+                        initialLikesCount: meme.likesCount,
                     }}
                 />
             </div>
             {isActiveComments ? (
                 <div className="mx-2 mt-2 border-t py-4 sm:mx-4">
-                    <Comments comments={comments} />
-                    {isAuthenticated ? (
-                        <CommentsForm
-                            commentForm={commentForm}
-                            onCommentSubmit={onCommentSubmit}
-                            currentUserImage={currentUserImage}
-                            isAuthenticated={isAuthenticated}
-                        />
-                    ) : (
-                        <Button
-                            className="w-full"
-                            onClick={() => signIn("github")}
-                        >
-                            Sign in to leave comments
-                        </Button>
-                    )}
+                    <Comments memeId={meme.id} />
+                    <CommentsForm
+                        isAuthenticated={isAuthenticated}
+                        currentUser={user}
+                        memeId={meme.id}
+                    />
                 </div>
             ) : null}
         </div>
@@ -112,23 +82,70 @@ export const MemeCard: FC<MemeCardProps> = ({
 
 interface MemeControlProps {
     isAuthenticated: boolean
-    isLiked: boolean | undefined
-    toggleLike: ({ memeId }: { memeId: string }) => void
     memeId: string
-    likesCount: number
+    initialLikesCount: number
     setIsActiveComments: (isActiveComments: boolean) => void
-    commentsCount: number
+    initialCommentsCount: number
 }
 
 const MemeControl: FC<MemeControlProps> = ({
     isAuthenticated,
-    isLiked,
-    toggleLike,
     memeId,
-    likesCount,
     setIsActiveComments,
-    commentsCount,
+    initialCommentsCount,
+    initialLikesCount,
 }) => {
+    const { toast } = useToast()
+    const utils = api.useContext()
+    const { data: likesCount } = api.memes.getLikesCount.useQuery(
+        { memeId },
+        { initialData: initialLikesCount }
+    )
+    const { data: isLiked } = api.memes.isLiked.useQuery(
+        {
+            memeId: memeId,
+        },
+        { enabled: isAuthenticated }
+    )
+    const { data: commentsCount } = api.memes.getCommentsCount.useQuery(
+        { memeId: memeId },
+        { initialData: initialCommentsCount }
+    )
+    const { mutate: toggleLike } = api.memes.toggleLike.useMutation({
+        // optimistic likesCount & isLiked update
+        onMutate: async () => {
+            await utils.memes.isLiked.cancel({ memeId })
+            await utils.memes.getLikesCount.cancel({
+                memeId,
+            })
+
+            utils.memes.getLikesCount.setData(
+                { memeId },
+                (oldQueryData: number | undefined) =>
+                    (oldQueryData ?? 0) + (isLiked ? -1 : 1)
+            )
+            utils.memes.isLiked.setData(
+                { memeId },
+                (oldQueryData: boolean | undefined) => !oldQueryData
+            )
+            const prevLikesCount = utils.memes.getLikesCount.getData({
+                memeId,
+            })
+            const prevIsLiked = utils.memes.isLiked.getData({
+                memeId,
+            })
+            return { isLiked: prevIsLiked, likesCount: prevLikesCount }
+        },
+        onError: ({ data, message }, __, ctx) => {
+            if (data?.code === "TOO_MANY_REQUESTS")
+                toast({
+                    title: "You reach rate limit",
+                    description: message,
+                })
+            utils.memes.isLiked.setData({ memeId }, ctx?.isLiked ?? false)
+            utils.memes.getLikesCount.setData({ memeId }, ctx?.likesCount ?? 0)
+        },
+    })
     return (
         <div className="flex space-x-2 md:space-x-3">
             {isAuthenticated ? (
@@ -203,25 +220,70 @@ const MemeImage = ({ imageSrc }: { imageSrc: string }) => {
 }
 
 interface CommentsFormProps {
-    currentUserImage: string | null | undefined
     isAuthenticated: boolean
-    commentForm: UseFormReturn<
-        {
-            text: string
-        },
-        any,
-        undefined
-    >
-    onCommentSubmit: (values: z.infer<typeof memeCommentSchema>) => void
+    currentUser: User | undefined
+    memeId: string
 }
 
 const CommentsForm: FC<CommentsFormProps> = ({
-    commentForm,
-    onCommentSubmit,
     isAuthenticated,
-    currentUserImage,
+    currentUser,
+    memeId,
 }) => {
-    return (
+    const utils = api.useContext()
+    const { mutate: comment } = api.memes.comment.useMutation({
+        // optimistic comment sending
+        onMutate: async ({ text, memeId }) => {
+            await utils.memes.getComments.cancel({ memeId })
+            await utils.memes.getCommentsCount.cancel({ memeId })
+            const prevComments = utils.memes.getComments.getData({
+                memeId,
+            })
+            const prevCommentsCount = utils.memes.getCommentsCount.getData({
+                memeId,
+            })
+            const optimisticComment: MemeComment = {
+                id: Math.random().toString(),
+                commentatorId: currentUser?.id || Math.random().toString(),
+                commentatorName: currentUser?.name || "",
+                image: currentUser?.image || "",
+                memeId,
+                createdAt: new Date(),
+                text: text,
+            }
+            utils.memes.getComments.setData({ memeId }, (oldQueryData) => [
+                ...(oldQueryData ?? []),
+                optimisticComment,
+            ])
+            utils.memes.getCommentsCount.setData(
+                { memeId },
+                (oldQueryData) => (oldQueryData ?? 0) + 1
+            )
+            return { comments: prevComments, commentsCount: prevCommentsCount }
+        },
+        onError: (_, __, ctx) => {
+            utils.memes.getComments.setData({ memeId }, ctx?.comments ?? [])
+            utils.memes.getCommentsCount.setData(
+                { memeId },
+                ctx?.commentsCount ?? 0
+            )
+        },
+    })
+    const commentForm = useForm<z.infer<typeof memeCommentSchema>>({
+        resolver: zodResolver(memeCommentSchema),
+        defaultValues: {
+            text: "",
+        },
+    })
+
+    const onCommentSubmit = (values: z.infer<typeof memeCommentSchema>) => {
+        comment({
+            memeId,
+            text: values.text,
+        })
+        commentForm.reset()
+    }
+    return isAuthenticated ? (
         <Form {...commentForm}>
             <form onSubmit={commentForm.handleSubmit(onCommentSubmit)}>
                 <FormField
@@ -233,7 +295,7 @@ const CommentsForm: FC<CommentsFormProps> = ({
                                 <div className="flex items-center space-x-3">
                                     {isAuthenticated ? (
                                         <Image
-                                            src={currentUserImage || ""}
+                                            src={currentUser?.image || ""}
                                             height={40}
                                             width={40}
                                             alt="your pic"
@@ -268,10 +330,23 @@ const CommentsForm: FC<CommentsFormProps> = ({
                 />
             </form>
         </Form>
+    ) : (
+        <Button className="w-full" onClick={() => signIn("github")}>
+            Sign in to leave comments
+        </Button>
     )
 }
 
-const Comments = ({ comments }: { comments: MemeComment[] | undefined }) => {
+const Comments = ({ memeId }: { memeId: string }) => {
+    const { data: comments, isLoading } = api.memes.getComments.useQuery({
+        memeId,
+    })
+    if (isLoading)
+        return (
+            <div className="flex justify-center py-3">
+                <Spinner />
+            </div>
+        )
     if (!comments) return <div>Unable to get comments</div>
     if (!comments.length) return null
     return (
