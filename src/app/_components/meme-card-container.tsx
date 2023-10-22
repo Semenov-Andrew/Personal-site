@@ -152,7 +152,7 @@ export const MemeCardContainer: FC<MemeCardContainerProps> = ({
             setIsActiveComments={setIsActiveComments}
             commentForm={commentForm}
             onCommentSubmit={onCommentSubmit}
-            image={user?.image}
+            currentUserImage={user?.image}
             comments={comments}
         />
     )
