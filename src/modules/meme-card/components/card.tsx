@@ -9,17 +9,13 @@ import { Comments } from "./comments"
 import { CommentsForm } from "./comments-form"
 import { MemeImage } from "./image"
 
-interface MemeCardProps {
+interface CardProps {
     isAuthenticated: boolean
     user: User | undefined
     meme: Meme
 }
 
-export const MemeCard: FC<MemeCardProps> = ({
-    meme,
-    isAuthenticated,
-    user,
-}) => {
+export const Card: FC<CardProps> = ({ meme, isAuthenticated, user }) => {
     const [isActiveComments, setIsActiveComments] = useState(false)
     return (
         <div className="ml-[calc(50%-50vw)] flex w-screen flex-col overflow-hidden sm:ml-0 sm:w-full ">
