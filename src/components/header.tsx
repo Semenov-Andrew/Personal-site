@@ -17,7 +17,7 @@ import { MainNav } from "./main-nav"
 import { MobileNav } from "./mobile-nav"
 import { ThemeToggle } from "./theme-toggle"
 import { Button } from "./ui/button"
-import { User } from "next-auth"
+import { type User } from "next-auth"
 import { signIn, signOut } from "next-auth/react"
 
 interface HeaderProps {

@@ -2,7 +2,7 @@ import { Button } from "@/components/ui/button"
 import { useToast } from "@/components/ui/use-toast"
 import { api } from "@/trpc/react"
 import { ChatBubbleOvalLeftIcon, HeartIcon } from "@heroicons/react/24/outline"
-import { FC } from "react"
+import { type FC } from "react"
 import { LoginRequiredDialog } from "./login-required-dialog"
 
 interface ActionsProps {

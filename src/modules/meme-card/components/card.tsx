@@ -3,7 +3,7 @@
 import { type FC, useState } from "react"
 import { type Meme } from "@prisma/client"
 import dayjs from "dayjs"
-import { User } from "next-auth"
+import { type User } from "next-auth"
 import { Actions } from "./actions"
 import { Comments } from "./comments"
 import { CommentsForm } from "./comments-form"

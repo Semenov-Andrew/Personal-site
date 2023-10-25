@@ -8,7 +8,7 @@ import {
     DialogTrigger,
 } from "@/components/ui/dialog"
 import { signIn } from "next-auth/react"
-import { ReactElement } from "react"
+import { type ReactElement } from "react"
 
 export const LoginRequiredDialog = ({
     triggerBtn,
