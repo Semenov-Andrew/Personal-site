@@ -11,7 +11,7 @@ import {
     DropdownMenuLabel,
     DropdownMenuSeparator,
     DropdownMenuTrigger,
-} from "@/app/_components/ui/dropdown-menu"
+} from "@/components/ui/dropdown-menu"
 
 import { MainNav } from "./main-nav"
 import { MobileNav } from "./mobile-nav"

@@ -5,8 +5,8 @@ import type { Metadata } from "next"
 import { Inter } from "next/font/google"
 
 import { cn } from "@/lib/utils"
-import { Toaster } from "@/app/_components/ui/toaster"
-import { ThemeProvider } from "@/app/_components/theme-provider"
+import { Toaster } from "@/components/ui/toaster"
+import { ThemeProvider } from "@/components/theme-provider"
 import { headers } from "next/headers"
 import { TRPCReactProvider } from "../trpc/react"
 

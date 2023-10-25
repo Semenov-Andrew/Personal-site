@@ -1,4 +1,4 @@
-import { MemeCard } from "@/app/_components/meme-card"
+import { MemeCard } from "@/components/meme-card"
 import { getServerAuthSession } from "@/server/auth"
 import { api } from "@/trpc/server"
 

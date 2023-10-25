@@ -21,7 +21,7 @@ import {
     DialogHeader,
     DialogTitle,
     DialogTrigger,
-} from "@/app/_components/ui/dialog"
+} from "@/components/ui/dialog"
 
 import { Button } from "./ui/button"
 import { Form, FormControl, FormField, FormItem, FormMessage } from "./ui/form"

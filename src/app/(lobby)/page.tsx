@@ -3,8 +3,8 @@ import Link from "next/link"
 import { images } from "@/constants/images"
 import { ArrowUpRightIcon } from "@heroicons/react/24/outline"
 
-import { Button } from "@/app/_components/ui/button"
-import { H1 } from "@/app/_components/ui/h1"
+import { Button } from "@/components/ui/button"
+import { H1 } from "@/components/ui/h1"
 
 export default function Home() {
     return (

@@ -4,9 +4,9 @@ import { useState } from "react"
 import Image from "next/image"
 
 import { UploadDropzone } from "@/lib/uploadthing"
-import { buttonVariants } from "@/app/_components/ui/button"
-import { Spinner } from "@/app/_components/ui/spinner"
-import { useToast } from "@/app/_components/ui/use-toast"
+import { buttonVariants } from "@/components/ui/button"
+import { Spinner } from "@/components/ui/spinner"
+import { useToast } from "@/components/ui/use-toast"
 import { api } from "@/trpc/react"
 
 const DashboardPage = () => {
