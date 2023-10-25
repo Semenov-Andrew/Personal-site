@@ -6,6 +6,7 @@ export default withUt({
     content: [
         "./src/app/**/*.{ts,tsx}",
         "./src/components/**/*.{ts,tsx}",
+        "./src/modules/**/*.{ts,tsx}",
         "./src/ui/**/*.{ts,tsx}",
         "./src/content/**/*.{md,mdx}",
     ],
