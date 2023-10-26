@@ -7,7 +7,7 @@ import { allAuthors, allPosts } from "contentlayer/generated"
 
 import { cn, formatDate } from "@/lib/utils"
 import { buttonVariants } from "@/components/ui/button"
-import { Mdx } from "@/components/mdx-components"
+import { Mdx } from "@/modules/mdx"
 
 interface PageProps {
     params: {

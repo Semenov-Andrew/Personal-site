@@ -5,7 +5,7 @@ import { useMDXComponent } from "next-contentlayer/hooks"
 
 import { cn } from "@/lib/utils"
 import { Callout } from "@/components/callout"
-import { MdxCard } from "@/components/mdx-card"
+import { MdxCard } from "@/modules/mdx/components/mdx-card"
 
 const components = {
     h1: ({ className, ...props }: React.HTMLAttributes<HTMLHeadingElement>) => (
