@@ -1,6 +1,6 @@
 import { type ReactNode } from "react"
 
-import { Footer } from "@/components/footer"
+import { Footer } from "@/modules/footer"
 import { Header } from "@/modules/header"
 import { getServerAuthSession } from "@/server/auth"
 
