@@ -3,7 +3,7 @@
 import { type FC } from "react"
 import Link from "next/link"
 import { usePathname } from "next/navigation"
-import { navLinks } from "@/constants/nav"
+import { navLinks } from "../constants/navLinks"
 import { HamburgerMenuIcon } from "@radix-ui/react-icons"
 
 import { cn } from "@/lib/utils"

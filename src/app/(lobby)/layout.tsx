@@ -1,7 +1,7 @@
 import { type ReactNode } from "react"
 
 import { Footer } from "@/components/footer"
-import { Header } from "@/components/header"
+import { Header } from "@/modules/header"
 import { getServerAuthSession } from "@/server/auth"
 
 export default async function LobbyLayout({
