@@ -1,7 +1,11 @@
 import { TRPCError } from "@trpc/server"
 import { z } from "zod"
 
-import { createTRPCRouter, protectedProcedure, publicProcedure } from "../trpc"
+import {
+    createTRPCRouter,
+    protectedProcedure,
+    publicProcedure,
+} from "../../../server/api/trpc"
 import { Ratelimit } from "@upstash/ratelimit"
 import { Redis } from "@upstash/redis"
 
