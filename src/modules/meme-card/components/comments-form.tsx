@@ -7,7 +7,7 @@ import {
     FormMessage,
 } from "@/components/ui/form"
 import { Input } from "@/components/ui/input"
-import { memeCommentSchema } from "@/lib/validations/meme"
+import { memeCommentSchema } from "../validations/comment-schema"
 import { api } from "@/trpc/react"
 import { PaperAirplaneIcon } from "@heroicons/react/24/outline"
 import { zodResolver } from "@hookform/resolvers/zod"
