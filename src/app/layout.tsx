@@ -6,9 +6,8 @@ import { Inter } from "next/font/google"
 
 import { cn } from "@/lib/utils"
 import { Toaster } from "@/components/ui/toaster"
-import { ThemeProvider } from "@/components/theme-provider"
+import { Providers } from "@/modules/providers"
 import { headers } from "next/headers"
-import { TRPCReactProvider } from "../trpc/react"
 
 const inter = Inter({ subsets: ["latin"] })
 
@@ -26,12 +25,10 @@ export default function RootLayout({
         <html lang="en" suppressHydrationWarning>
             <head />
             <body className={cn(inter.className, "flex min-h-screen flex-col")}>
-                <ThemeProvider attribute="class">
-                    <TRPCReactProvider headers={headers()}>
-                        {children}
-                        <Toaster />
-                    </TRPCReactProvider>
-                </ThemeProvider>
+                <Providers>
+                    {children}
+                    <Toaster />
+                </Providers>
             </body>
         </html>
     )
