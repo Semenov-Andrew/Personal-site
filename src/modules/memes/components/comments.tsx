@@ -1,31 +1,58 @@
-import Image from "next/image"
-
 import { Spinner } from "@/components/ui/spinner"
 import { api } from "@/trpc/react"
-import dayjs from "dayjs"
-import relativeTime from "dayjs/plugin/relativeTime"
 import { Comment } from "./comment"
-
-dayjs.extend(relativeTime)
-dayjs.locale("ru")
+import { useState } from "react"
 
 export const Comments = ({ memeId }: { memeId: string }) => {
-    const { data: comments, isLoading } = api.memes.getComments.useQuery({
-        memeId,
-    })
-    if (isLoading)
-        return (
-            <div className="flex justify-center py-3">
-                <Spinner />
-            </div>
+    const [page, setPage] = useState(0)
+
+    const { data, fetchNextPage, isFetchingNextPage } =
+        api.memes.getInfiniteComments.useInfiniteQuery(
+            {
+                limit: 2,
+                memeId,
+            },
+            {
+                getNextPageParam: (lastPage) => lastPage.nextCursor,
+            }
         )
-    if (!comments) return <div>Unable to get comments</div>
-    if (!comments.length) return null
+
+    const handleFetchNextPage = () => {
+        fetchNextPage()
+        setPage((prev) => prev + 1)
+    }
+
+    const handleFetchPreviousPage = () => {
+        setPage((prev) => prev - 1)
+    }
+
+    const isHasMoreComments = !!data?.pages[page]?.nextCursor
+
     return (
-        <div className="space-y-4 py-4">
-            {comments.map((comment) => (
-                <Comment comment={comment} />
-            ))}
+        <div>
+            <div className="space-y-4 py-4">
+                {data?.pages.map((page) =>
+                    page.comments.map((comment) => (
+                        <Comment key={comment.id} comment={comment} />
+                    ))
+                )}
+            </div>
+            <div className="mb-4">
+                {isFetchingNextPage ? (
+                    <div className="flex justify-center">
+                        <Spinner />
+                    </div>
+                ) : (
+                    isHasMoreComments && (
+                        <button
+                            className="text-sm"
+                            onClick={handleFetchNextPage}
+                        >
+                            Show more comments
+                        </button>
+                    )
+                )}
+            </div>
         </div>
     )
 }

@@ -320,4 +320,35 @@ export const memesRouter = createTRPCRouter({
                 })
             }
         }),
+    getInfiniteComments: publicProcedure
+        .input(
+            z.object({
+                limit: z.number(),
+                // cursor is a reference to the last item in the previous batch
+                // it's used to fetch the next batch
+                cursor: z.string().nullish(),
+                skip: z.number().optional(),
+                memeId: z.string().min(1),
+            })
+        )
+        .query(async ({ ctx, input }) => {
+            const { limit, skip, memeId, cursor } = input
+            const comments = await ctx.db.memeComment.findMany({
+                take: limit + 1,
+                skip: skip,
+                cursor: cursor ? { id: cursor } : undefined,
+                where: {
+                    memeId,
+                },
+            })
+            let nextCursor: typeof cursor | undefined = undefined
+            if (comments.length > limit) {
+                const nextItem = comments.pop() // return the last item from the array
+                nextCursor = nextItem?.id
+            }
+            return {
+                comments,
+                nextCursor,
+            }
+        }),
 })
