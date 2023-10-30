@@ -7,7 +7,7 @@ import { COMMENTS_REQ_LIMIT } from "../constants/commentsReqLimit"
 export const Comments = ({ memeId }: { memeId: string }) => {
     const [page, setPage] = useState(0)
 
-    const { data, fetchNextPage, isFetchingNextPage } =
+    const { data, fetchNextPage, isFetchingNextPage, hasNextPage } =
         api.memes.getInfiniteComments.useInfiniteQuery(
             {
                 limit: COMMENTS_REQ_LIMIT,
@@ -44,7 +44,7 @@ export const Comments = ({ memeId }: { memeId: string }) => {
                         <Spinner />
                     </div>
                 ) : (
-                    isHasMoreComments && (
+                    hasNextPage && (
                         <button
                             className="text-sm"
                             onClick={handleFetchNextPage}
