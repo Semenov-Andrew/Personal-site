@@ -2,6 +2,7 @@ import { Spinner } from "@/components/ui/spinner"
 import { api } from "@/trpc/react"
 import { Comment } from "./comment"
 import { useState } from "react"
+import { COMMENTS_REQ_LIMIT } from "../constants/commentsReqLimit"
 
 export const Comments = ({ memeId }: { memeId: string }) => {
     const [page, setPage] = useState(0)
@@ -9,7 +10,7 @@ export const Comments = ({ memeId }: { memeId: string }) => {
     const { data, fetchNextPage, isFetchingNextPage } =
         api.memes.getInfiniteComments.useInfiniteQuery(
             {
-                limit: 2,
+                limit: COMMENTS_REQ_LIMIT,
                 memeId,
             },
             {
