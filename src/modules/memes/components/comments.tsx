@@ -7,16 +7,23 @@ import { COMMENTS_REQ_LIMIT } from "../constants/commentsReqLimit"
 export const Comments = ({ memeId }: { memeId: string }) => {
     const [page, setPage] = useState(0)
 
-    const { data, fetchNextPage, isFetchingNextPage, hasNextPage } =
-        api.memes.getInfiniteComments.useInfiniteQuery(
-            {
-                limit: COMMENTS_REQ_LIMIT,
-                memeId,
-            },
-            {
-                getNextPageParam: (lastPage) => lastPage.nextCursor,
-            }
-        )
+    const {
+        data,
+        fetchNextPage,
+        isFetchingNextPage,
+        hasNextPage,
+        isFetchingPreviousPage,
+        hasPreviousPage,
+        isLoading,
+    } = api.memes.getInfiniteComments.useInfiniteQuery(
+        {
+            limit: COMMENTS_REQ_LIMIT,
+            memeId,
+        },
+        {
+            getNextPageParam: (lastPage) => lastPage.nextCursor,
+        }
+    )
 
     const handleFetchNextPage = () => {
         fetchNextPage()
@@ -27,18 +34,39 @@ export const Comments = ({ memeId }: { memeId: string }) => {
         setPage((prev) => prev - 1)
     }
 
-    const isHasMoreComments = !!data?.pages[page]?.nextCursor
-
     return (
         <div>
-            <div className="space-y-4 py-4">
-                {data?.pages.map((page) =>
-                    page.comments.map((comment) => (
-                        <Comment key={comment.id} comment={comment} />
-                    ))
+            <div className="mb-4">
+                {isFetchingPreviousPage ? (
+                    <div className="flex justify-center">
+                        <Spinner />
+                    </div>
+                ) : (
+                    hasPreviousPage && (
+                        <button
+                            className="text-sm"
+                            onClick={handleFetchPreviousPage}
+                        >
+                            Show more comments
+                        </button>
+                    )
                 )}
             </div>
-            <div className="mb-4">
+            {isLoading ? (
+                <div className="flex justify-center">
+                    <Spinner />
+                </div>
+            ) : (
+                <div className="space-y-4">
+                    {data?.pages.map((page) =>
+                        page.comments.map((comment) => (
+                            <Comment key={comment.id} comment={comment} />
+                        ))
+                    )}
+                </div>
+            )}
+
+            <div className="my-2">
                 {isFetchingNextPage ? (
                     <div className="flex justify-center">
                         <Spinner />
@@ -46,7 +74,7 @@ export const Comments = ({ memeId }: { memeId: string }) => {
                 ) : (
                     hasNextPage && (
                         <button
-                            className="text-sm"
+                            className="py-2 text-sm"
                             onClick={handleFetchNextPage}
                         >
                             Show more comments
