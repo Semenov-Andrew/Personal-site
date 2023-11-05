@@ -2,9 +2,14 @@ import { Spinner } from "@/components/ui/spinner"
 import { api } from "@/trpc/react"
 import { Comment } from "./comment"
 import { useState } from "react"
-import { COMMENTS_REQ_LIMIT } from "../constants/commentsReqLimit"
 
-export const Comments = ({ memeId }: { memeId: string }) => {
+export const Comments = ({
+    memeId,
+    isCommentSent,
+}: {
+    memeId: string
+    isCommentSent: boolean
+}) => {
     const [page, setPage] = useState(0)
 
     const {
@@ -15,13 +20,15 @@ export const Comments = ({ memeId }: { memeId: string }) => {
         isFetchingPreviousPage,
         hasPreviousPage,
         isLoading,
+        fetchPreviousPage,
     } = api.memes.getInfiniteComments.useInfiniteQuery(
         {
-            limit: COMMENTS_REQ_LIMIT,
             memeId,
+            isLastPage: isCommentSent,
         },
         {
             getNextPageParam: (lastPage) => lastPage.nextCursor,
+            getPreviousPageParam: (firstPage) => firstPage.prevCursor,
         }
     )
 
@@ -31,6 +38,7 @@ export const Comments = ({ memeId }: { memeId: string }) => {
     }
 
     const handleFetchPreviousPage = () => {
+        fetchPreviousPage()
         setPage((prev) => prev - 1)
     }
 

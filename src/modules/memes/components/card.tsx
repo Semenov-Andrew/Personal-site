@@ -17,6 +17,8 @@ interface CardProps {
 
 export const Card: FC<CardProps> = ({ meme, isAuthenticated, user }) => {
     const [isActiveComments, setIsActiveComments] = useState(false)
+    const [isCommentSent, setIsCommentSent] = useState(false)
+
     return (
         <div className="ml-[calc(50%-50vw)] flex w-screen flex-col overflow-hidden sm:ml-0 sm:w-full ">
             <MemeImage imageSrc={meme.imageSrc} />
@@ -38,9 +40,10 @@ export const Card: FC<CardProps> = ({ meme, isAuthenticated, user }) => {
             </div>
             {isActiveComments ? (
                 <div className="mx-2 mt-2 border-t py-4 sm:mx-4">
-                    <Comments memeId={meme.id} />
+                    <Comments memeId={meme.id} isCommentSent={isCommentSent} />
                     <CommentsForm
                         isAuthenticated={isAuthenticated}
+                        setIsCommentSent={setIsCommentSent}
                         currentUser={user}
                         memeId={meme.id}
                     />

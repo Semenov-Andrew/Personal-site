@@ -11,58 +11,77 @@ import { memeCommentSchema } from "../validations/comment-schema"
 import { api } from "@/trpc/react"
 import { PaperAirplaneIcon } from "@heroicons/react/24/outline"
 import { zodResolver } from "@hookform/resolvers/zod"
-import { type MemeComment } from "@prisma/client"
 import { type User } from "next-auth"
 import { signIn } from "next-auth/react"
 import { type FC } from "react"
 import { useForm } from "react-hook-form"
 import { type z } from "zod"
 import Image from "next/image"
+import { COMMENTS_REQ_LIMIT } from "../constants/commentsReqLimit"
+import { MemeComment } from "@prisma/client"
 
 interface CommentsFormProps {
     isAuthenticated: boolean
     currentUser: User | undefined
     memeId: string
+    setIsCommentSent: (isCommentSent: boolean) => void
 }
 
 export const CommentsForm: FC<CommentsFormProps> = ({
     isAuthenticated,
     currentUser,
     memeId,
+    setIsCommentSent,
 }) => {
-    const utils = api.useContext()
+    const utils = api.useUtils()
     const { mutate: comment } = api.memes.comment.useMutation({
         // optimistic comment sending
         onMutate: async ({ text, memeId }) => {
-            await utils.memes.getComments.cancel({ memeId })
-            await utils.memes.getCommentsCount.cancel({ memeId })
-            const prevComments = utils.memes.getComments.getData({
+            if (!currentUser?.id) throw new Error("unauthorized")
+            await utils.memes.getInfiniteComments.cancel({
                 memeId,
             })
+            utils.memes.getInfiniteComments.reset()
+            await utils.memes.getCommentsCount.cancel({ memeId })
+            const prevCommentsPages =
+                utils.memes.getInfiniteComments.getInfiniteData({
+                    memeId,
+                })
             const prevCommentsCount = utils.memes.getCommentsCount.getData({
                 memeId,
             })
             const optimisticComment: MemeComment = {
                 id: Math.random().toString(),
-                commentatorId: currentUser?.id || Math.random().toString(),
-                commentatorName: currentUser?.name || "",
-                image: currentUser?.image || "",
+                commentatorId: currentUser.id,
+                commentatorName: currentUser.name || "",
+                image: currentUser.image || "",
                 memeId,
                 createdAt: new Date(),
                 text: text,
             }
-            utils.memes.getComments.setData({ memeId }, (oldQueryData) => [
-                ...(oldQueryData ?? []),
-                optimisticComment,
-            ])
+            utils.memes.getInfiniteComments.setInfiniteData(
+                { memeId, limit: COMMENTS_REQ_LIMIT },
+                (oldQueryData) => {
+                    if (!oldQueryData)
+                        return {
+                            pages: [],
+                            pageParams: [],
+                        }
+                    return {
+                        ...oldQueryData,
+                    }
+                }
+            )
             utils.memes.getCommentsCount.setData(
                 { memeId },
                 (oldQueryData) => (oldQueryData ?? 0) + 1
             )
-            return { comments: prevComments, commentsCount: prevCommentsCount }
+            setIsCommentSent(true)
+            return {
+                commentsCount: prevCommentsCount,
+            }
         },
         onError: (_, __, ctx) => {
-            utils.memes.getComments.setData({ memeId }, ctx?.comments ?? [])
             utils.memes.getCommentsCount.setData(
                 { memeId },
                 ctx?.commentsCount ?? 0

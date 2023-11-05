@@ -8,6 +8,7 @@ import {
 } from "../../../server/api/trpc"
 import { Ratelimit } from "@upstash/ratelimit"
 import { Redis } from "@upstash/redis"
+import { COMMENTS_REQ_LIMIT } from "../constants/commentsReqLimit"
 
 const ratelimit = new Ratelimit({
     redis: Redis.fromEnv(),
@@ -323,19 +324,38 @@ export const memesRouter = createTRPCRouter({
     getInfiniteComments: publicProcedure
         .input(
             z.object({
-                limit: z.number(),
+                limit: z.number().default(COMMENTS_REQ_LIMIT),
                 // cursor is a reference to the last item in the previous batch
                 // it's used to fetch the next batch
                 cursor: z.string().nullish(),
                 skip: z.number().optional(),
                 memeId: z.string().min(1),
+                order: z.enum(["asc", "desc"]).default("asc"),
+                isLastPage: z.boolean().default(false),
             })
         )
         .query(async ({ ctx, input }) => {
-            const { limit, skip, memeId, cursor } = input
+            const { limit, skip, memeId, cursor, order, isLastPage } = input
+            if (isLastPage) {
+                // If it's the last page, set skip to ensure you skip the first items
+                // and prevCursor to the last element of the previous batch
+                const comments = await ctx.db.memeComment.findMany({
+                    take: limit + 1,
+                    cursor: cursor ? { id: cursor } : undefined,
+                    orderBy: {
+                        id: "desc",
+                    },
+                })
+                const prevCursor = comments.pop()?.id
+                return {
+                    comments: comments.reverse(),
+                    nextCursor: null,
+                    prevCursor,
+                }
+            }
             const comments = await ctx.db.memeComment.findMany({
                 take: limit + 1,
-                skip: skip,
+                skip,
                 cursor: cursor ? { id: cursor } : undefined,
                 where: {
                     memeId,
@@ -343,12 +363,13 @@ export const memesRouter = createTRPCRouter({
             })
             let nextCursor: typeof cursor | undefined = undefined
             if (comments.length > limit) {
-                const nextItem = comments.pop() // return the last item from the array
+                const nextItem = comments.pop()
                 nextCursor = nextItem?.id
             }
             return {
                 comments,
                 nextCursor,
+                prevCursor: cursor,
             }
         }),
 })
