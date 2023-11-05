@@ -340,13 +340,20 @@ export const memesRouter = createTRPCRouter({
                 // If it's the last page, set skip to ensure you skip the first items
                 // and prevCursor to the last element of the previous batch
                 const comments = await ctx.db.memeComment.findMany({
+                    where: {
+                        memeId,
+                    },
                     take: limit + 1,
                     cursor: cursor ? { id: cursor } : undefined,
                     orderBy: {
                         id: "desc",
                     },
                 })
-                const prevCursor = comments.pop()?.id
+                let prevCursor: typeof cursor | undefined = undefined
+                if (comments.length > limit) {
+                    const prevItem = comments.pop()
+                    prevCursor = prevItem?.id
+                }
                 return {
                     comments: comments.reverse(),
                     nextCursor: null,
