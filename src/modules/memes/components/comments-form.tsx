@@ -17,8 +17,7 @@ import { type FC } from "react"
 import { useForm } from "react-hook-form"
 import { type z } from "zod"
 import Image from "next/image"
-import { COMMENTS_REQ_LIMIT } from "../constants/commentsReqLimit"
-import { MemeComment } from "@prisma/client"
+import { type MemeComment } from "@prisma/client"
 
 interface CommentsFormProps {
     isAuthenticated: boolean
@@ -38,18 +37,16 @@ export const CommentsForm: FC<CommentsFormProps> = ({
         // optimistic comment sending
         onMutate: async ({ text, memeId }) => {
             if (!currentUser?.id) throw new Error("unauthorized")
+            // cancel comments query
             await utils.memes.getInfiniteComments.cancel({
                 memeId,
             })
-            utils.memes.getInfiniteComments.reset()
-            await utils.memes.getCommentsCount.cancel({ memeId })
+            // get prev comments pages
             const prevCommentsPages =
                 utils.memes.getInfiniteComments.getInfiniteData({
                     memeId,
                 })
-            const prevCommentsCount = utils.memes.getCommentsCount.getData({
-                memeId,
-            })
+            // create new optimistic comment
             const optimisticComment: MemeComment = {
                 id: Math.random().toString(),
                 commentatorId: currentUser.id,
@@ -57,21 +54,36 @@ export const CommentsForm: FC<CommentsFormProps> = ({
                 image: currentUser.image || "",
                 memeId,
                 createdAt: new Date(),
-                text: text,
+                text,
             }
+            // set optimistic comment to comments pages
             utils.memes.getInfiniteComments.setInfiniteData(
-                { memeId, limit: COMMENTS_REQ_LIMIT },
+                { memeId },
                 (oldQueryData) => {
-                    if (!oldQueryData)
+                    if (!oldQueryData) {
                         return {
                             pages: [],
                             pageParams: [],
                         }
+                    }
                     return {
                         ...oldQueryData,
+                        pages: [
+                            ...oldQueryData.pages,
+                            {
+                                comments: [optimisticComment],
+                                nextCursor: undefined,
+                                prevCursor:
+                                    oldQueryData.pages.pop()?.comments[0].id,
+                            },
+                        ],
                     }
                 }
             )
+            await utils.memes.getCommentsCount.cancel({ memeId })
+            const prevCommentsCount = utils.memes.getCommentsCount.getData({
+                memeId,
+            })
             utils.memes.getCommentsCount.setData(
                 { memeId },
                 (oldQueryData) => (oldQueryData ?? 0) + 1
@@ -79,6 +91,7 @@ export const CommentsForm: FC<CommentsFormProps> = ({
             setIsCommentSent(true)
             return {
                 commentsCount: prevCommentsCount,
+                commentsPages: prevCommentsPages,
             }
         },
         onError: (_, __, ctx) => {
@@ -101,6 +114,7 @@ export const CommentsForm: FC<CommentsFormProps> = ({
             text: values.text,
         })
         commentForm.reset()
+        commentForm.setFocus("text")
     }
     return isAuthenticated ? (
         <Form {...commentForm}>
@@ -141,7 +155,6 @@ export const CommentsForm: FC<CommentsFormProps> = ({
                                         <PaperAirplaneIcon className="h-6 w-6" />
                                     </Button>
                                 </div>
-
                                 <FormMessage />
                             </FormItem>
                         )

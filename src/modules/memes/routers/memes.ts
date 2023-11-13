@@ -325,8 +325,6 @@ export const memesRouter = createTRPCRouter({
         .input(
             z.object({
                 limit: z.number().default(COMMENTS_REQ_LIMIT),
-                // cursor is a reference to the last item in the previous batch
-                // it's used to fetch the next batch
                 cursor: z.string().nullish(),
                 skip: z.number().optional(),
                 memeId: z.string().min(1),
@@ -337,8 +335,6 @@ export const memesRouter = createTRPCRouter({
         .query(async ({ ctx, input }) => {
             const { limit, skip, memeId, cursor, order, isLastPage } = input
             if (isLastPage) {
-                // If it's the last page, set skip to ensure you skip the first items
-                // and prevCursor to the last element of the previous batch
                 const comments = await ctx.db.memeComment.findMany({
                     where: {
                         memeId,
@@ -354,9 +350,11 @@ export const memesRouter = createTRPCRouter({
                     const prevItem = comments.pop()
                     prevCursor = prevItem?.id
                 }
+                console.log("prevCursor: ", prevCursor)
+                console.log("nextCursor: ", cursor)
                 return {
                     comments: comments.reverse(),
-                    nextCursor: null,
+                    nextCursor: cursor,
                     prevCursor,
                 }
             }

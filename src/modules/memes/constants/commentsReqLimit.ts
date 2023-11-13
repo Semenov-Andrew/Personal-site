@@ -1,1 +1,1 @@
-export const COMMENTS_REQ_LIMIT = 2
+export const COMMENTS_REQ_LIMIT = 10

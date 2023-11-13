@@ -1,16 +1,15 @@
 import { Spinner } from "@/components/ui/spinner"
 import { api } from "@/trpc/react"
 import { Comment } from "./comment"
-import { useState } from "react"
+// import { useState } from "react"
 
 export const Comments = ({
     memeId,
-    isCommentSent,
 }: {
     memeId: string
     isCommentSent: boolean
 }) => {
-    const [page, setPage] = useState(0)
+    // const [_, setPage] = useState(0)
 
     const {
         data,
@@ -24,22 +23,24 @@ export const Comments = ({
     } = api.memes.getInfiniteComments.useInfiniteQuery(
         {
             memeId,
-            isLastPage: isCommentSent,
         },
         {
-            getNextPageParam: (lastPage) => lastPage.nextCursor,
+            getNextPageParam: (lastPage) => {
+                console.log(lastPage)
+                return lastPage.nextCursor
+            },
             getPreviousPageParam: (firstPage) => firstPage.prevCursor,
         }
     )
 
-    const handleFetchNextPage = () => {
-        fetchNextPage()
-        setPage((prev) => prev + 1)
+    const handleFetchNextPage = async () => {
+        await fetchNextPage()
+        // setPage((prev) => prev + 1)
     }
 
-    const handleFetchPreviousPage = () => {
-        fetchPreviousPage()
-        setPage((prev) => prev - 1)
+    const handleFetchPreviousPage = async () => {
+        await fetchPreviousPage()
+        // setPage((prev) => prev - 1)
     }
 
     return (
