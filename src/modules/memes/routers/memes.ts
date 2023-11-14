@@ -329,12 +329,12 @@ export const memesRouter = createTRPCRouter({
                 skip: z.number().optional(),
                 memeId: z.string().min(1),
                 order: z.enum(["asc", "desc"]).default("asc"),
-                isLastPage: z.boolean().default(false),
+                isFromLastPage: z.boolean().default(false),
             })
         )
         .query(async ({ ctx, input }) => {
-            const { limit, skip, memeId, cursor, order, isLastPage } = input
-            if (isLastPage) {
+            const { limit, skip, memeId, cursor, isFromLastPage } = input
+            if (isFromLastPage) {
                 const comments = await ctx.db.memeComment.findMany({
                     where: {
                         memeId,
@@ -350,11 +350,9 @@ export const memesRouter = createTRPCRouter({
                     const prevItem = comments.pop()
                     prevCursor = prevItem?.id
                 }
-                console.log("prevCursor: ", prevCursor)
-                console.log("nextCursor: ", cursor)
                 return {
                     comments: comments.reverse(),
-                    nextCursor: cursor,
+                    nextCursor: undefined,
                     prevCursor,
                 }
             }
@@ -374,7 +372,7 @@ export const memesRouter = createTRPCRouter({
             return {
                 comments,
                 nextCursor,
-                prevCursor: cursor,
+                prevCursor: undefined,
             }
         }),
 })

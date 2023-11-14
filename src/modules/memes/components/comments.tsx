@@ -5,6 +5,7 @@ import { Comment } from "./comment"
 
 export const Comments = ({
     memeId,
+    isCommentSent,
 }: {
     memeId: string
     isCommentSent: boolean
@@ -23,12 +24,12 @@ export const Comments = ({
     } = api.memes.getInfiniteComments.useInfiniteQuery(
         {
             memeId,
+            isFromLastPage: isCommentSent,
         },
         {
-            getNextPageParam: (lastPage) => {
-                console.log(lastPage)
-                return lastPage.nextCursor
-            },
+            cacheTime: 0,
+            staleTime: 60000, // 10 minutes
+            getNextPageParam: (lastPage) => lastPage.nextCursor,
             getPreviousPageParam: (firstPage) => firstPage.prevCursor,
         }
     )

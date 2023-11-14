@@ -37,14 +37,21 @@ export const CommentsForm: FC<CommentsFormProps> = ({
         // optimistic comment sending
         onMutate: async ({ text, memeId }) => {
             if (!currentUser?.id) throw new Error("unauthorized")
+            // reset old from first page query
+            await utils.memes.getInfiniteComments.reset({
+                memeId,
+                isFromLastPage: false,
+            })
             // cancel comments query
             await utils.memes.getInfiniteComments.cancel({
                 memeId,
+                isFromLastPage: true,
             })
             // get prev comments pages
             const prevCommentsPages =
                 utils.memes.getInfiniteComments.getInfiniteData({
                     memeId,
+                    isFromLastPage: true,
                 })
             // create new optimistic comment
             const optimisticComment: MemeComment = {
@@ -56,27 +63,38 @@ export const CommentsForm: FC<CommentsFormProps> = ({
                 createdAt: new Date(),
                 text,
             }
-            // set optimistic comment to comments pages
             utils.memes.getInfiniteComments.setInfiniteData(
-                { memeId },
+                { memeId, isFromLastPage: true },
                 (oldQueryData) => {
                     if (!oldQueryData) {
                         return {
-                            pages: [],
+                            pages: [
+                                {
+                                    comments: [optimisticComment],
+                                    nextCursor: undefined,
+                                    prevCursor: undefined,
+                                },
+                            ],
                             pageParams: [],
                         }
                     }
+                    const updatedPages = oldQueryData.pages.map(
+                        (page, pageIndex) => {
+                            if (pageIndex === 0) {
+                                return {
+                                    ...page,
+                                    comments: [
+                                        ...page.comments,
+                                        optimisticComment,
+                                    ],
+                                }
+                            }
+                            return page
+                        }
+                    )
                     return {
                         ...oldQueryData,
-                        pages: [
-                            ...oldQueryData.pages,
-                            {
-                                comments: [optimisticComment],
-                                nextCursor: undefined,
-                                prevCursor:
-                                    oldQueryData.pages.pop()?.comments[0].id,
-                            },
-                        ],
+                        pages: updatedPages,
                     }
                 }
             )
