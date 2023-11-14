@@ -17,7 +17,7 @@ import { type FC } from "react"
 import { useForm } from "react-hook-form"
 import { type z } from "zod"
 import Image from "next/image"
-import { type MemeComment } from "@prisma/client"
+import { COMMENTS_REQ_LIMIT } from "../constants/commentsReqLimit"
 
 interface CommentsFormProps {
     isAuthenticated: boolean
@@ -37,24 +37,27 @@ export const CommentsForm: FC<CommentsFormProps> = ({
         // optimistic comment sending
         onMutate: async ({ text, memeId }) => {
             if (!currentUser?.id) throw new Error("unauthorized")
-            // reset old from first page query
-            await utils.memes.getInfiniteComments.reset({
-                memeId,
-                isFromLastPage: false,
-            })
-            // cancel comments query
-            await utils.memes.getInfiniteComments.cancel({
-                memeId,
-                isFromLastPage: true,
-            })
-            // get prev comments pages
-            const prevCommentsPages =
+            const prevCommentsCount =
+                utils.memes.getCommentsCount.getData({
+                    memeId,
+                }) ?? 0
+
+            // Fetch the last page of comments only on the first comment
+            let lastPage
+            const existingData =
                 utils.memes.getInfiniteComments.getInfiniteData({
                     memeId,
                     isFromLastPage: true,
                 })
-            // create new optimistic comment
-            const optimisticComment: MemeComment = {
+            if (!existingData && prevCommentsCount > COMMENTS_REQ_LIMIT) {
+                lastPage = await utils.memes.getInfiniteComments.fetchInfinite({
+                    memeId,
+                    isFromLastPage: true,
+                })
+            }
+
+            // Create a new optimistic comment
+            const optimisticComment = {
                 id: Math.random().toString(),
                 commentatorId: currentUser.id,
                 commentatorName: currentUser.name || "",
@@ -63,6 +66,8 @@ export const CommentsForm: FC<CommentsFormProps> = ({
                 createdAt: new Date(),
                 text,
             }
+
+            // Add the optimistic comment to the end of the last page
             utils.memes.getInfiniteComments.setInfiniteData(
                 { memeId, isFromLastPage: true },
                 (oldQueryData) => {
@@ -78,9 +83,10 @@ export const CommentsForm: FC<CommentsFormProps> = ({
                             pageParams: [],
                         }
                     }
+
                     const updatedPages = oldQueryData.pages.map(
                         (page, pageIndex) => {
-                            if (pageIndex === 0) {
+                            if (pageIndex === oldQueryData.pages.length - 1) {
                                 return {
                                     ...page,
                                     comments: [
@@ -92,24 +98,35 @@ export const CommentsForm: FC<CommentsFormProps> = ({
                             return page
                         }
                     )
+
                     return {
                         ...oldQueryData,
                         pages: updatedPages,
                     }
                 }
             )
+
+            // Cancel comments queries for pages other than the last page
+            const totalPages = lastPage?.pages.length ?? 0
+            for (let pageIndex = 0; pageIndex < totalPages - 1; pageIndex++) {
+                await utils.memes.getInfiniteComments.cancel({
+                    memeId,
+                    isFromLastPage: true,
+                })
+            }
+
+            // Fetch the updated comments count
             await utils.memes.getCommentsCount.cancel({ memeId })
-            const prevCommentsCount = utils.memes.getCommentsCount.getData({
-                memeId,
-            })
             utils.memes.getCommentsCount.setData(
                 { memeId },
                 (oldQueryData) => (oldQueryData ?? 0) + 1
             )
+
             setIsCommentSent(true)
+
             return {
                 commentsCount: prevCommentsCount,
-                commentsPages: prevCommentsPages,
+                lastPage,
             }
         },
         onError: (_, __, ctx) => {
@@ -119,6 +136,7 @@ export const CommentsForm: FC<CommentsFormProps> = ({
             )
         },
     })
+
     const commentForm = useForm<z.infer<typeof memeCommentSchema>>({
         resolver: zodResolver(memeCommentSchema),
         defaultValues: {

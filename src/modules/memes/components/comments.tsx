@@ -28,7 +28,7 @@ export const Comments = ({
         },
         {
             cacheTime: 0,
-            staleTime: 60000, // 10 minutes
+            staleTime: 600000, // 10 minutes
             getNextPageParam: (lastPage) => lastPage.nextCursor,
             getPreviousPageParam: (firstPage) => firstPage.prevCursor,
         }
