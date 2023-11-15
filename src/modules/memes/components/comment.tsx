@@ -1,4 +1,4 @@
-import { MemeComment } from "@prisma/client"
+import { type MemeComment } from "@prisma/client"
 import Image from "next/image"
 import dayjs from "dayjs"
 import relativeTime from "dayjs/plugin/relativeTime"

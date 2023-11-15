@@ -1,4 +1,4 @@
-import { PropsWithChildren } from "react"
+import { type PropsWithChildren } from "react"
 import { ThemeProvider } from "./theme"
 import { headers } from "next/headers"
 import { TRPCReactProvider } from "./trpc-react"
