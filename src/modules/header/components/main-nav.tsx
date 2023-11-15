@@ -3,7 +3,7 @@
 import { type FC } from "react"
 import Link from "next/link"
 import { usePathname } from "next/navigation"
-import { navLinks } from "@/modules/header/constants/navLinks"
+import { navLinks } from "../constants/navLinks"
 
 import { cn } from "@/lib/utils"
 

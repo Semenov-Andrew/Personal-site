@@ -5,7 +5,7 @@ import {
     createTRPCRouter,
     protectedProcedure,
     publicProcedure,
-} from "../../../server/api/trpc"
+} from "@/server/api/trpc"
 import { Ratelimit } from "@upstash/ratelimit"
 import { Redis } from "@upstash/redis"
 import { COMMENTS_REQ_LIMIT } from "../constants/commentsReqLimit"

@@ -1,5 +1,5 @@
 import { memesRouter } from "@/modules/memes"
-import { createTRPCRouter } from "@/server/api/trpc"
+import { createTRPCRouter } from "./trpc"
 
 /**
  * This is the primary router for your server.
