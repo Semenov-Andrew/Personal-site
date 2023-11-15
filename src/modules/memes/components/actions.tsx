@@ -21,7 +21,7 @@ export const Actions: FC<ActionsProps> = ({
     initialLikesCount,
 }) => {
     const { toast } = useToast()
-    const utils = api.useContext()
+    const utils = api.useUtils()
     const { data: likesCount } = api.memes.getLikesCount.useQuery(
         { memeId },
         { initialData: initialLikesCount }
