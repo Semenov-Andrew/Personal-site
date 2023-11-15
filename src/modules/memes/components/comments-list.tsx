@@ -24,23 +24,17 @@ export const CommentsList = ({
     commentsPages,
 }: CommentsListProps) => {
     return (
-        <div>
-            <div className="mb-4">
-                {isFetchingPreviousPage ? (
-                    <div className="flex justify-center">
-                        <Spinner />
-                    </div>
-                ) : (
-                    hasPreviousPage && (
-                        <button
-                            className="text-sm"
-                            onClick={handleFetchPreviousPage}
-                        >
-                            Show more comments
-                        </button>
-                    )
-                )}
-            </div>
+        <div className="py-4">
+            {hasPreviousPage && (
+                <button
+                    className="mb-4 flex items-center space-x-2 text-sm disabled:cursor-not-allowed disabled:text-muted-foreground"
+                    onClick={handleFetchPreviousPage}
+                    disabled={isFetchingPreviousPage}
+                >
+                    <span>Show previous comments</span>
+                    {isFetchingPreviousPage && <Spinner size={"sm"} />}
+                </button>
+            )}
             {isLoading ? (
                 <div className="flex justify-center">
                     <Spinner />
@@ -55,22 +49,16 @@ export const CommentsList = ({
                 </div>
             )}
 
-            <div className="my-2">
-                {isFetchingNextPage ? (
-                    <div className="flex justify-center">
-                        <Spinner />
-                    </div>
-                ) : (
-                    hasNextPage && (
-                        <button
-                            className="py-2 text-sm"
-                            onClick={handleFetchNextPage}
-                        >
-                            Show more comments
-                        </button>
-                    )
-                )}
-            </div>
+            {hasNextPage && (
+                <button
+                    className="mt-4 flex items-center space-x-2 text-sm disabled:cursor-not-allowed disabled:text-muted-foreground"
+                    onClick={handleFetchNextPage}
+                    disabled={isFetchingNextPage}
+                >
+                    <span>Show more comments</span>
+                    {isFetchingNextPage && <Spinner size={"sm"} />}
+                </button>
+            )}
         </div>
     )
 }

@@ -47,7 +47,7 @@ export const Comments = ({
     }
 
     return (
-        <div className="mx-2 mt-2 border-t py-4 sm:mx-4">
+        <div className="mx-2 border-t lg:mx-4">
             <CommentsList
                 isFetchingPreviousPage={isFetchingPreviousPage}
                 hasPreviousPage={hasPreviousPage}

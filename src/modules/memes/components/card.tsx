@@ -21,7 +21,7 @@ export const Card: FC<CardProps> = ({ meme, isAuthenticated, user }) => {
     return (
         <div className="ml-[calc(50%-50vw)] flex w-screen flex-col overflow-hidden sm:ml-0 sm:w-full ">
             <MemeImage imageSrc={meme.imageSrc} />
-            <div className="flex flex-col space-y-3 p-2 text-sm sm:flex-row-reverse sm:justify-between sm:space-y-0 lg:px-4 lg:py-2">
+            <div className="flex flex-col space-y-3 p-2 text-sm sm:flex-row-reverse sm:justify-between sm:space-y-0 lg:px-4">
                 <div className="flex items-center space-x-1 text-muted-foreground">
                     <span>{meme.viewsCount} views</span>
                     <span>•</span>
