@@ -110,15 +110,6 @@ export const CommentsForm: FC<CommentsFormProps> = ({
                 }
             )
 
-            // Cancel comments queries for pages other than the last page
-            // const totalPages = lastPage?.pages.length ?? 0
-            // for (let pageIndex = 0; pageIndex < totalPages - 1; pageIndex++) {
-            //     await utils.memes.getInfiniteComments.cancel({
-            //         memeId,
-            //         isFromLastPage: true,
-            //     })
-            // }
-
             // Fetch the updated comments count
             await utils.memes.getCommentsCount.cancel({ memeId })
             utils.memes.getCommentsCount.setData(
