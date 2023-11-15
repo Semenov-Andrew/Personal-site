@@ -1,7 +1,6 @@
 import { Spinner } from "@/components/ui/spinner"
 import { api } from "@/trpc/react"
 import { Comment } from "./comment"
-// import { useState } from "react"
 
 export const Comments = ({
     memeId,
@@ -10,8 +9,6 @@ export const Comments = ({
     memeId: string
     isCommentSent: boolean
 }) => {
-    // const [_, setPage] = useState(0)
-
     const {
         data,
         fetchNextPage,
@@ -36,12 +33,10 @@ export const Comments = ({
 
     const handleFetchNextPage = async () => {
         await fetchNextPage()
-        // setPage((prev) => prev + 1)
     }
 
     const handleFetchPreviousPage = async () => {
         await fetchPreviousPage()
-        // setPage((prev) => prev - 1)
     }
 
     return (

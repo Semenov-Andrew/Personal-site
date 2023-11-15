@@ -37,6 +37,7 @@ export const CommentsForm: FC<CommentsFormProps> = ({
         // optimistic comment sending
         onMutate: async ({ text, memeId }) => {
             if (!currentUser?.id) throw new Error("unauthorized")
+
             const prevCommentsCount =
                 utils.memes.getCommentsCount.getData({
                     memeId,
@@ -44,12 +45,15 @@ export const CommentsForm: FC<CommentsFormProps> = ({
 
             // Fetch the last page of comments only on the first comment
             let lastPage
-            const existingData =
+            const existingCommentsPages =
                 utils.memes.getInfiniteComments.getInfiniteData({
                     memeId,
                     isFromLastPage: true,
                 })
-            if (!existingData && prevCommentsCount > COMMENTS_REQ_LIMIT) {
+            if (
+                !existingCommentsPages &&
+                prevCommentsCount > COMMENTS_REQ_LIMIT
+            ) {
                 lastPage = await utils.memes.getInfiniteComments.fetchInfinite({
                     memeId,
                     isFromLastPage: true,
@@ -107,13 +111,13 @@ export const CommentsForm: FC<CommentsFormProps> = ({
             )
 
             // Cancel comments queries for pages other than the last page
-            const totalPages = lastPage?.pages.length ?? 0
-            for (let pageIndex = 0; pageIndex < totalPages - 1; pageIndex++) {
-                await utils.memes.getInfiniteComments.cancel({
-                    memeId,
-                    isFromLastPage: true,
-                })
-            }
+            // const totalPages = lastPage?.pages.length ?? 0
+            // for (let pageIndex = 0; pageIndex < totalPages - 1; pageIndex++) {
+            //     await utils.memes.getInfiniteComments.cancel({
+            //         memeId,
+            //         isFromLastPage: true,
+            //     })
+            // }
 
             // Fetch the updated comments count
             await utils.memes.getCommentsCount.cancel({ memeId })
