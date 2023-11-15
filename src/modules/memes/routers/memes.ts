@@ -237,7 +237,7 @@ export const memesRouter = createTRPCRouter({
         .input(
             z.object({
                 memeId: z.string().min(1),
-                text: z.string().min(10),
+                text: z.string().max(500),
             })
         )
         .mutation(async ({ input, ctx }) => {
