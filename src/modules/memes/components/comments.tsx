@@ -1,16 +1,23 @@
-import { Spinner } from "@/components/ui/spinner"
 import { api } from "@/trpc/react"
-import { Comment } from "./comment"
+import { CommentsList } from "./comments-list"
+import { CommentsForm } from "./comments-form"
+import { type User } from "next-auth"
 
 export const Comments = ({
     memeId,
     isCommentSent,
+    isAuthenticated,
+    currentUser,
+    setIsCommentSent,
 }: {
     memeId: string
     isCommentSent: boolean
+    isAuthenticated: boolean
+    currentUser: User | undefined
+    setIsCommentSent: (isCommentSent: boolean) => void
 }) => {
     const {
-        data,
+        data: commentsPages,
         fetchNextPage,
         isFetchingNextPage,
         hasNextPage,
@@ -40,53 +47,23 @@ export const Comments = ({
     }
 
     return (
-        <div>
-            <div className="mb-4">
-                {isFetchingPreviousPage ? (
-                    <div className="flex justify-center">
-                        <Spinner />
-                    </div>
-                ) : (
-                    hasPreviousPage && (
-                        <button
-                            className="text-sm"
-                            onClick={handleFetchPreviousPage}
-                        >
-                            Show more comments
-                        </button>
-                    )
-                )}
-            </div>
-            {isLoading ? (
-                <div className="flex justify-center">
-                    <Spinner />
-                </div>
-            ) : (
-                <div className="space-y-4">
-                    {data?.pages.map((page) =>
-                        page.comments.map((comment) => (
-                            <Comment key={comment.id} comment={comment} />
-                        ))
-                    )}
-                </div>
-            )}
-
-            <div className="my-2">
-                {isFetchingNextPage ? (
-                    <div className="flex justify-center">
-                        <Spinner />
-                    </div>
-                ) : (
-                    hasNextPage && (
-                        <button
-                            className="py-2 text-sm"
-                            onClick={handleFetchNextPage}
-                        >
-                            Show more comments
-                        </button>
-                    )
-                )}
-            </div>
+        <div className="mx-2 mt-2 border-t py-4 sm:mx-4">
+            <CommentsList
+                isFetchingPreviousPage={isFetchingPreviousPage}
+                hasPreviousPage={hasPreviousPage}
+                isFetchingNextPage={isFetchingNextPage}
+                hasNextPage={hasNextPage}
+                isLoading={isLoading}
+                handleFetchPreviousPage={handleFetchPreviousPage}
+                handleFetchNextPage={handleFetchNextPage}
+                commentsPages={commentsPages}
+            />
+            <CommentsForm
+                isAuthenticated={isAuthenticated}
+                setIsCommentSent={setIsCommentSent}
+                currentUser={currentUser}
+                memeId={memeId}
+            />
         </div>
     )
 }

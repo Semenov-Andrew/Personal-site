@@ -6,7 +6,6 @@ import dayjs from "dayjs"
 import { type User } from "next-auth"
 import { Actions } from "./actions"
 import { Comments } from "./comments"
-import { CommentsForm } from "./comments-form"
 import { MemeImage } from "./image"
 
 interface CardProps {
@@ -29,25 +28,21 @@ export const Card: FC<CardProps> = ({ meme, isAuthenticated, user }) => {
                     <div className="">{dayjs(meme.createdAt).fromNow()}</div>
                 </div>
                 <Actions
-                    {...{
-                        isAuthenticated,
-                        initialCommentsCount: meme.commentsCount,
-                        setIsActiveComments,
-                        memeId: meme.id,
-                        initialLikesCount: meme.likesCount,
-                    }}
+                    isAuthenticated={isAuthenticated}
+                    initialCommentsCount={meme.commentsCount}
+                    setIsActiveComments={setIsActiveComments}
+                    memeId={meme.id}
+                    initialLikesCount={meme.likesCount}
                 />
             </div>
             {isActiveComments ? (
-                <div className="mx-2 mt-2 border-t py-4 sm:mx-4">
-                    <Comments memeId={meme.id} isCommentSent={isCommentSent} />
-                    <CommentsForm
-                        isAuthenticated={isAuthenticated}
-                        setIsCommentSent={setIsCommentSent}
-                        currentUser={user}
-                        memeId={meme.id}
-                    />
-                </div>
+                <Comments
+                    memeId={meme.id}
+                    isCommentSent={isCommentSent}
+                    setIsCommentSent={setIsCommentSent}
+                    isAuthenticated={isAuthenticated}
+                    currentUser={user}
+                />
             ) : null}
         </div>
     )
