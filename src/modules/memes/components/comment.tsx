@@ -23,8 +23,10 @@ export const Comment = ({ comment }: { comment: MemeComment }) => {
                     <div className="mb-1 font-semibold">
                         {comment.commentatorName}
                     </div>
-                    <div>{comment.text}</div>
-                    <div className=" mt-1 text-muted-foreground">
+                    <div style={{ wordBreak: "break-word" }}>
+                        {comment.text}
+                    </div>
+                    <div className="mt-1 text-muted-foreground">
                         {dayjs(comment.createdAt).fromNow()}
                     </div>
                 </div>
