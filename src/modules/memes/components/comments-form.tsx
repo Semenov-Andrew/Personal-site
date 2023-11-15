@@ -44,7 +44,6 @@ export const CommentsForm: FC<CommentsFormProps> = ({
                 }) ?? 0
 
             // Fetch the last page of comments only on the first comment
-            let lastPage
             const existingCommentsPages =
                 utils.memes.getInfiniteComments.getInfiniteData({
                     memeId,
@@ -54,7 +53,7 @@ export const CommentsForm: FC<CommentsFormProps> = ({
                 !existingCommentsPages &&
                 prevCommentsCount > COMMENTS_REQ_LIMIT
             ) {
-                lastPage = await utils.memes.getInfiniteComments.fetchInfinite({
+                await utils.memes.getInfiniteComments.fetchInfinite({
                     memeId,
                     isFromLastPage: true,
                 })
@@ -121,13 +120,17 @@ export const CommentsForm: FC<CommentsFormProps> = ({
 
             return {
                 commentsCount: prevCommentsCount,
-                lastPage,
+                commentsPages: existingCommentsPages,
             }
         },
         onError: (_, __, ctx) => {
             utils.memes.getCommentsCount.setData(
                 { memeId },
                 ctx?.commentsCount ?? 0
+            )
+            utils.memes.getInfiniteComments.setInfiniteData(
+                { memeId, isFromLastPage: true },
+                ctx?.commentsPages
             )
         },
     })
