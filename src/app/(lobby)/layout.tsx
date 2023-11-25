@@ -1,18 +1,18 @@
 import { type ReactNode } from "react"
-import { getKindeServerSession } from "@kinde-oss/kinde-auth-nextjs/server"
 
-import { PERMISSIONS } from "@/lib/permissions"
-import { Footer } from "@/components/footer"
-import { Header } from "@/components/header"
+import { Footer } from "@/modules/footer"
+import { Header } from "@/modules/header"
+import { getServerAuthSession } from "@/server/auth"
 
-export default function LobbyLayout({ children }: { children: ReactNode }) {
-    const { getUser, getPermission } = getKindeServerSession()
-    const user = getUser()
-    const dashboardAccess = getPermission(PERMISSIONS.dashboardAccess)
-
+export default async function LobbyLayout({
+    children,
+}: {
+    children: ReactNode
+}) {
+    const session = await getServerAuthSession()
     return (
         <>
-            <Header user={user} dashboardAccess={dashboardAccess} />
+            <Header user={session?.user} dashboardAccess={true} />
             <main className="container relative mx-auto flex flex-grow flex-col pt-4">
                 {children}
             </main>

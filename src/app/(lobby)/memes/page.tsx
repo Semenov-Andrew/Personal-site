@@ -1,13 +1,24 @@
-import { MemeCard } from "@/components/meme-card"
-import { serverClient } from "@/app/_trpc/server-client"
+import { MemeCard } from "@/modules/memes"
+import { getServerAuthSession } from "@/server/auth"
+import { api } from "@/trpc/server"
 
 const MemesPage = async () => {
-    const memes = await serverClient.memes.getAll()
+    const memes = await api.memes.getAll.query()
+    const session = await getServerAuthSession()
     return (
         <div className="mx-auto flex w-full max-w-2xl flex-col space-y-8">
-            {memes.map((meme) => (
-                <MemeCard meme={meme} key={meme.id} />
-            ))}
+            {memes?.length ? (
+                memes.map((meme) => (
+                    <MemeCard
+                        meme={meme}
+                        isAuthenticated={!!session?.user}
+                        user={session?.user}
+                        key={meme.id}
+                    />
+                ))
+            ) : (
+                <div>No memes yet</div>
+            )}
         </div>
     )
 }

@@ -7,10 +7,10 @@ import { UploadDropzone } from "@/lib/uploadthing"
 import { buttonVariants } from "@/components/ui/button"
 import { Spinner } from "@/components/ui/spinner"
 import { useToast } from "@/components/ui/use-toast"
-import { trpc } from "@/app/_trpc/client"
+import { api } from "@/trpc/react"
 
 const DashboardPage = () => {
-    const mutation = trpc.memes.createMeme.useMutation()
+    const mutation = api.memes.create.useMutation()
     const [uploadedImgSrc, setUploadedImgSrc] = useState("")
     const { toast } = useToast()
 
@@ -42,7 +42,7 @@ const DashboardPage = () => {
                                 ?.map((file) => file.name)
                                 .join(", ")}`,
                         })
-                        if (res) {
+                        if (res && res[0]) {
                             mutation.mutate({ imageSrc: res[0].url })
                             setUploadedImgSrc(res[0].url)
                         }

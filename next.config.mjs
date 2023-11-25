@@ -10,7 +10,20 @@ import "./src/env.mjs"
 const config = {
     reactStrictMode: true,
     images: {
-        domains: ["utfs.io", "lh3.googleusercontent.com"],
+        remotePatterns: [
+            {
+                protocol: "https",
+                hostname: "utfs.io",
+            },
+            {
+                protocol: "https",
+                hostname: "lh3.googleusercontent.com",
+            },
+            {
+                protocol: "https",
+                hostname: "avatars.githubusercontent.com",
+            },
+        ],
     },
 }
 

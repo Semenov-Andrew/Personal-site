@@ -1,14 +1,11 @@
 import "@/styles/globals.css"
-import "@/styles/mdx.css"
 
 import type { Metadata } from "next"
 import { Inter } from "next/font/google"
 
 import { cn } from "@/lib/utils"
 import { Toaster } from "@/components/ui/toaster"
-import { ThemeProvider } from "@/components/theme-provider"
-
-import Provider from "./_trpc/provider"
+import { Providers } from "@/modules/providers"
 
 const inter = Inter({ subsets: ["latin"] })
 
@@ -26,12 +23,10 @@ export default function RootLayout({
         <html lang="en" suppressHydrationWarning>
             <head />
             <body className={cn(inter.className, "flex min-h-screen flex-col")}>
-                <ThemeProvider attribute="class">
-                    <Provider>
-                        {children}
-                        <Toaster />
-                    </Provider>
-                </ThemeProvider>
+                <Providers>
+                    {children}
+                    <Toaster />
+                </Providers>
             </body>
         </html>
     )
