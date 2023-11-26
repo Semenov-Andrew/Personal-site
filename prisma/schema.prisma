@@ -90,10 +90,16 @@ model User {
   email         String?       @unique
   emailVerified DateTime?
   image         String?
+  role          UserRole      @default(user)
   accounts      Account[]
   sessions      Session[]
   memesLikes    MemeLike[]
   memesComments MemeComment[]
+}
+
+enum UserRole {
+  admin
+  user
 }
 
 model VerificationToken {

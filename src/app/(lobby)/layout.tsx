@@ -12,7 +12,10 @@ export default async function LobbyLayout({
     const session = await getServerAuthSession()
     return (
         <>
-            <Header user={session?.user} dashboardAccess={true} />
+            <Header
+                user={session?.user}
+                dashboardAccess={session?.user.role === "admin"}
+            />
             <main className="container relative mx-auto flex flex-grow flex-col pt-4">
                 {children}
             </main>
