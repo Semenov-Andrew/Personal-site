@@ -9,6 +9,7 @@ import {
 import { Ratelimit } from "@upstash/ratelimit"
 import { Redis } from "@upstash/redis"
 import { COMMENTS_REQ_LIMIT } from "../constants/commentsReqLimit"
+import { getServerAuthSession } from "@/server/auth"
 
 const ratelimit = new Ratelimit({
     redis: Redis.fromEnv(),
@@ -42,7 +43,12 @@ export const memesRouter = createTRPCRouter({
             })
         )
         .mutation(async ({ input, ctx }) => {
-            //TODO: only admin accessible
+            const session = await getServerAuthSession()
+            if (session?.user.role !== "admin")
+                return new TRPCError({
+                    code: "FORBIDDEN",
+                    message: "Only admin accessible",
+                })
             const { imageSrc, title } = input
             try {
                 const newMeme = await ctx.db.meme.create({
