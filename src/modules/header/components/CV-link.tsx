@@ -11,7 +11,7 @@ import Link from "next/link"
 export const CVLink = () => {
     return (
         <DropdownMenu>
-            <DropdownMenuTrigger className="flex items-center space-x-1 text-muted-foreground duration-150 hover:text-foreground">
+            <DropdownMenuTrigger className="flex items-center space-x-1 px-0.5 text-sm font-medium text-muted-foreground duration-150 hover:text-foreground">
                 <span>CV</span>
                 <ChevronDownIcon className="h-4 w-4" />
             </DropdownMenuTrigger>
