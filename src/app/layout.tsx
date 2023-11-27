@@ -22,7 +22,9 @@ export default function RootLayout({
     return (
         <html lang="en" suppressHydrationWarning>
             <head />
-            <body className={cn(inter.className, "flex min-h-screen flex-col")}>
+            <body
+                className={cn(inter.className, "flex min-h-[100svh] flex-col")}
+            >
                 <Providers>
                     {children}
                     <Toaster />
