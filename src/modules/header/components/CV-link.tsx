@@ -16,11 +16,11 @@ export const CVLink = () => {
                 <ChevronDownIcon className="h-4 w-4" />
             </DropdownMenuTrigger>
             <DropdownMenuContent>
-                <Link href={"/files/CV(en).pdf"}>
+                <Link target="_blank" href={"/files/CV(en).pdf"}>
                     <DropdownMenuItem>EN</DropdownMenuItem>
                 </Link>
                 <DropdownMenuSeparator />
-                <Link href={"/files/CV(ru).pdf"}>
+                <Link target="_blank" href={"/files/CV(ru).pdf"}>
                     <DropdownMenuItem>RU</DropdownMenuItem>
                 </Link>
             </DropdownMenuContent>
