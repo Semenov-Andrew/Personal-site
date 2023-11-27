@@ -1,13 +1,13 @@
 import "@/styles/globals.css"
 
 import type { Metadata } from "next"
-import { Inter } from "next/font/google"
 
 import { cn } from "@/lib/utils"
 import { Toaster } from "@/components/ui/toaster"
 import { Providers } from "@/modules/providers"
 
-const inter = Inter({ subsets: ["latin"] })
+import { GeistSans } from "geist/font/sans"
+import { GeistMono } from "geist/font/mono"
 
 export const metadata: Metadata = {
     title: "Andrew Semyonov",
@@ -23,7 +23,11 @@ export default function RootLayout({
         <html lang="en" suppressHydrationWarning>
             <head />
             <body
-                className={cn(inter.className, "flex min-h-[100svh] flex-col")}
+                className={cn(
+                    GeistMono.variable,
+                    GeistSans.variable,
+                    "flex min-h-[100svh] flex-col font-sans"
+                )}
             >
                 <Providers>
                     {children}
