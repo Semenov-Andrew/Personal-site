@@ -14,6 +14,7 @@ import {
     SheetHeader,
     SheetTrigger,
 } from "@/components/ui/sheet"
+import { CVLink } from "./CV-link"
 
 export const MobileNav: FC = () => {
     const pathname = usePathname()
@@ -51,6 +52,7 @@ export const MobileNav: FC = () => {
                                     </SheetClose>
                                 )
                             })}
+                            <CVLink />
                         </nav>
                     ) : null}
                 </SheetHeader>

@@ -6,6 +6,7 @@ import { usePathname } from "next/navigation"
 import { navLinks } from "../constants/navLinks"
 
 import { cn } from "@/lib/utils"
+import { CVLink } from "./CV-link"
 
 export const MainNav: FC = () => {
     const pathname = usePathname()
@@ -33,6 +34,7 @@ export const MainNav: FC = () => {
                             </Link>
                         )
                     })}
+                    <CVLink />
                 </nav>
             ) : null}
         </div>
