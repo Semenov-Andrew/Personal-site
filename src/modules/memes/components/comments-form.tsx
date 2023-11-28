@@ -17,7 +17,6 @@ import { type FC } from "react"
 import { useForm } from "react-hook-form"
 import { type z } from "zod"
 import Image from "next/image"
-import { COMMENTS_REQ_LIMIT } from "../constants/commentsReqLimit"
 
 interface CommentsFormProps {
     isAuthenticated: boolean
@@ -50,8 +49,7 @@ export const CommentsForm: FC<CommentsFormProps> = ({
                     isFromLastPage: true,
                 })
             if (
-                !existingCommentsPages &&
-                prevCommentsCount > COMMENTS_REQ_LIMIT
+                !existingCommentsPages
             ) {
                 await utils.memes.getInfiniteComments.fetchInfinite({
                     memeId,
