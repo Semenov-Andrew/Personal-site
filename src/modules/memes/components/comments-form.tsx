@@ -48,9 +48,7 @@ export const CommentsForm: FC<CommentsFormProps> = ({
                     memeId,
                     isFromLastPage: true,
                 })
-            if (
-                !existingCommentsPages
-            ) {
+            if (!existingCommentsPages) {
                 await utils.memes.getInfiniteComments.fetchInfinite({
                     memeId,
                     isFromLastPage: true,
@@ -195,7 +193,7 @@ export const CommentsForm: FC<CommentsFormProps> = ({
             </form>
         </Form>
     ) : (
-        <Button className="w-full" onClick={() => signIn("github")}>
+        <Button className="w-full" onClick={() => signIn()}>
             Sign in to leave comments
         </Button>
     )
