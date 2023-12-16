@@ -14,7 +14,7 @@ The Strategy pattern belongs to behavioral design patterns, focusing on organizi
 
 Published in 1994 in the book **"Design Patterns: Elements of Reusable Object-Oriented Software."**
 
-<div className="mt-6 flex items-center justify-center lg:p-4">
+<div className="ml-[calc(50%-50vw)] mt-6 flex w-screen items-center justify-center sm:ml-0 sm:w-full lg:p-4">
     <img
         src="/images/blog/strategy-pattern/design-patterns-book.jpg"
         width={"300"}
@@ -25,7 +25,7 @@ Published in 1994 in the book **"Design Patterns: Elements of Reusable Object-Or
 
 It was written by intelligent individuals - Erich Gamma, Richard Helm, Ralph Johnson, John Vlissides.
 
-<div className="mt-6 flex items-center justify-center lg:p-4">
+<div className="ml-[calc(50%-50vw)] mt-6 flex w-screen items-center justify-center sm:ml-0 sm:w-full lg:p-4">
     <img
         src="/images/blog/strategy-pattern/design-patterns-book-authors.png"
         width={"500"}
@@ -61,7 +61,7 @@ For instance, imagine an application for real estate sales with a search and fil
 
 Initially, everything is fine. We've developed functionality for users and got this pretty filter inside some class.
 
-<div className="mt-6 flex items-center justify-center lg:p-4">
+<div className="ml-[calc(50%-50vw)] mt-6 flex w-screen items-center justify-center sm:ml-0 sm:w-full lg:p-4">
     <img
         src="/images/blog/strategy-pattern/real-estate/initial.svg"
         width={"250"}
@@ -71,7 +71,7 @@ Initially, everything is fine. We've developed functionality for users and got t
 
 However, then a Product Manager comes and says that we now need to add a search for rental properties. Thus, we have another type of users: renters. For them, perhaps, photos of the apartment are more important to assess its condition. And what we gonna do? Create an another filter.
 
-<div className="mt-6 flex items-center justify-center lg:p-4">
+<div className="ml-[calc(50%-50vw)] mt-6 flex w-screen items-center justify-center sm:ml-0 sm:w-full lg:p-4">
     <img
         src="/images/blog/strategy-pattern/real-estate/two-filters.svg"
         width={"500"}
@@ -82,7 +82,7 @@ In the future, there might be a need to enhance the functionality for legal enti
 individuals, etc., introducing various features like contract formation. And there
 can be many such differences. So you easily turn your code as it expands into this:
 
-<div className="mt-6 flex items-center justify-center lg:p-4">
+<div className="ml-[calc(50%-50vw)] mt-6 flex w-screen items-center justify-center sm:ml-0 sm:w-full lg:p-4">
     <img
         src="/images/blog/strategy-pattern/real-estate/big-class.png"
         width={"500"}
@@ -93,7 +93,7 @@ can be many such differences. So you easily turn your code as it expands into th
 The way out of this problem is precisely the Strategy pattern.
 And this is how it works. First, we should create an interface that will describe what main class accepts. Then we write some implementations of this interface and can easily switch them right during our program is running.
 
-<div className="mt-6 flex items-center justify-center lg:p-4">
+<div className="ml-[calc(50%-50vw)] mt-6 flex w-screen items-center justify-center sm:ml-0 sm:w-full lg:p-4">
     <img
         src="/images/blog/strategy-pattern/real-estate/filters-interface.png"
         width={"500"}
@@ -103,7 +103,7 @@ And this is how it works. First, we should create an interface that will describ
 
 In a general way, it will looks like this:
 
-<div className="mt-6 flex items-center justify-center lg:p-4">
+<div className="ml-[calc(50%-50vw)] mt-6 flex w-screen items-center justify-center sm:ml-0 sm:w-full lg:p-4">
     <img
         src="/images/blog/strategy-pattern/real-estate/general-way.png"
         width={"500"}
