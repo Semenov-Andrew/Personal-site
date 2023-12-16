@@ -1,5 +1,6 @@
+"use client"
 import * as React from "react"
-import Image from "next/image"
+// import Image from "next/image"
 import type { MDXComponents } from "mdx/types"
 import { useMDXComponent } from "next-contentlayer/hooks"
 
@@ -176,7 +177,7 @@ const components = {
             {...props}
         />
     ),
-    Image,
+    // Image,
     Callout,
     Card: MdxCard,
 }
