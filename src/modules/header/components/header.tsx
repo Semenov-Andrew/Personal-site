@@ -72,7 +72,7 @@ export const Header: FC<HeaderProps> = ({ user, dashboardAccess }) => {
                         </DropdownMenuContent>
                     </DropdownMenu>
                 ) : (
-                    <Button size={"sm"} onClick={() => signIn("github")}>
+                    <Button size={"sm"} onClick={() => signIn()}>
                         Sign In
                     </Button>
                 )}

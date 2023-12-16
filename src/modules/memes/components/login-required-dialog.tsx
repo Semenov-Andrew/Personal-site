@@ -25,7 +25,7 @@ export const LoginRequiredDialog = ({
                         Login required. It will take less than 10 seconds
                     </DialogDescription>
                 </DialogHeader>
-                <Button onClick={() => signIn("github")}>Sign-in</Button>
+                <Button onClick={() => signIn()}>Sign-in</Button>
             </DialogContent>
         </Dialog>
     )
